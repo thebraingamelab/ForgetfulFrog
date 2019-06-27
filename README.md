@@ -3,7 +3,7 @@
 A game centered around playing as a frog who forgets the locations of the lilypads as soon as they sink under the water. Used to test
 cognitive science principles such as sequential memory and partial report and collect data using the jsPsych frameork.
 
-##Implemented Features
+## Implemented Features
 >Randomized Map Generation
 
 >Mobile Compatibility and Responsive Design
@@ -14,7 +14,7 @@ cognitive science principles such as sequential memory and partial report and co
 
 >Placeholder Graphics from google images
 
-##Features to Implement
+## Features to Implement
 >Graphical Overhaul
 
 >Sound Design
