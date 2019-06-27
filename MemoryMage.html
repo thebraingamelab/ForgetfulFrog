@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+
+<html>
+
+  <head>
+
+    <title>Forgetful Frog</title>
+
+    <meta name = "viewport" content = "width=device-width, initial-scale=1.0">
+    <script src="lib/jspsych-6.0.5/jspsych.js"></script>
+    <script src="lib/jspsych-6.0.5/plugins/jspsych-html-button-response.js"></script>
+    <!--<link href="../jspsych-6.0.5/css/jspsych.css" rel="stylesheet" type="text/css"></link>-->
+    <link href = "tiling.css" rel = "stylesheet" type = "text/css">
+
+  </head>
+
+  <body>
+    
+    <script src = "procgen.js" type = "text/javascript"></script>
+    <script src="memory-map.js"></script>
+  
+  </body>
+  <script>
+    //https://stackoverflow.com/questions/48234696/how-to-put-a-gif-with-canvas/48297226
+    var timeline = [];
+    var lives = 3;
+    var timemax = 3.5;
+    var timemin = 2.5;
+    var trial = {
+      type: "memory-map",
+      exit_length: 2,
+      blackout_speed: function(){
+        return ((Math.random() * (timemax - timemin))+timemin)*1000;
+      }
+    };
+    function failcheck(){
+      var ts = jsPsych.data.get().last(1).filter({trial_type: 'memory-map'}).filter({success: false}).count();
+      if(ts == 1){
+        lives--;
+        console.log("loss detected, lives: "+lives);
+      }
+    }
+    var consecutives = 0;
+    function spikecheck(){
+      var ts = jsPsych.data.get().last(1).filter({trial_type: 'memory-map'}).filter({success: true}).count();
+      if(ts == 1){
+        console.log("win detected");
+        timemax = timemax - .5;
+        timemin = timemin - .5;
+        //CHANGE TIME VAR
+        //jsPsych.addNodeToEndOfTimeline(trial, function(){});
+        //console.log("NODE ADDED");
+        consecutives++;
+      }
+      if(consecutives >= 5){
+        consecutives = 0;
+        trial.exit_length = trial.exit_length + 1;
+        //must be set .5 higher since .5 subtracted after
+        timemax = 3.5;
+        timemin = 2.5;
+      }
+    }
+    function postMap(){
+      console.log("consec: "+consecutives);
+      failcheck();
+      spikecheck();
+      if(lives > 0){
+        jsPsych.addNodeToEndOfTimeline(trial, function(){});
+        console.log("TIME RANGE: "+timemin+" - "+timemax);
+        //console.log("NODE ADDED");
+        }
+    }
+    var instructions = {
+      type: "html-button-response",
+      stimulus: "<p>You are a mage navigating the dungeon! " +
+      "Unfortunately for you, its dark and you can't see a thing. " +
+      "Using your light magic, you will be able to see a little bit of the level at the start.</p>" +
+      "<p>You can't move until you stop casting and can't see anymore, memorize the layout as best you can and reach the exit without hitting any walls!</p>" +
+      "</div>",
+      choices: ["Start"],
+      button_html: '<button class="jspsych-btn">%choice%</button>'
+    };
+    timeline.push(instructions);
+    //timeline.push(trial);
+    //begin
+  jsPsych.init({
+  timeline: timeline,
+      on_trial_finish: function(){
+        postMap();
+      },
+      on_finish: function(){
+        jsPsych.data.displayData();
+        }
+});
+
+  </script>
+
+</html>
