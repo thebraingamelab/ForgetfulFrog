@@ -45,8 +45,10 @@ jsPsych.plugins['memory-map'] = (function(){
   }
 
   plugin.trial = function(display_element,trial){
+    //creating canvases that buffer paintings, like layers in photoshop
     var ground = document.createElement("canvas").getContext("2d");
     var pad = document.createElement("canvas").getContext("2d");
+    var midground = document.createElement("canvas").getContext("2d");
     if(document.querySelector("canvas") == null){
       display_element.innerHTML = "<div id='canbg' style='background-image: url(img/waterSeamlessLoop.gif);'><canvas id='canvas-board' width='100%' height='100%'></div><div id = info><img id='infoBarImage' src='img/infoBar.png'></div>";
       var board = document.querySelector('#canvas-board').getContext("2d");
@@ -159,6 +161,9 @@ jsPsych.plugins['memory-map'] = (function(){
         }
         //filled rectangle shape
       }
+      if(trial.tutorial){
+        midground.drawImage(ground.canvas, 0, 0, ground.canvas.width, ground.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
+      }
       board.drawImage(ground.canvas, 0, 0, ground.canvas.width, ground.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
     };
     //Draw Player Character
@@ -258,6 +263,8 @@ jsPsych.plugins['memory-map'] = (function(){
 
     //moves that character in the passed direction
     moveChar = function(dir){
+      wipeWaiters();
+      blackout();
       switch(dir){
         case 2:
           console.log("DOWN");
@@ -294,9 +301,12 @@ jsPsych.plugins['memory-map'] = (function(){
       document.onkeydown = null;
       var padcheck = false;
       board.clearRect(0,0,board.canvas.width,board.canvas.height);
+      if(trial.tutorial){
+        board.drawImage(midground.canvas, 0, 0, midground.canvas.width, midground.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
+      }
       ground.clearRect(0,0,ground.canvas.width,ground.canvas.height);
       //shift should be a multiple of 2 since level.scale is as well
-      var shift = 2;
+      var shift = 8;
       switch(int){
         case 1:
           if(level.walkable.includes(collider(char.tx,char.ty))){
@@ -416,8 +426,8 @@ jsPsych.plugins['memory-map'] = (function(){
     mapGen = function(){
       //ORIENTATION DETECTION
       //if(window.innerHeight > window.innerWidth){orientationFix()};
-      level.map = boundedWalk(level.x,level.y,Math.floor((level.x * level.y)/2),trial.exit_length);
-      //level.map = dfsGen(level.x,level.y,trial.exit_length);
+      //level.map = boundedWalk(level.x,level.y,Math.floor((level.x * level.y)/2),trial.exit_length);
+      level.map = dfsGen(level.x,level.y,trial.exit_length);
       trial_data.map = level.map;
     }
 
@@ -455,6 +465,7 @@ jsPsych.plugins['memory-map'] = (function(){
 
     blackout = function(){
       //board.fillStyle = "#000000";
+      if(!trial.tutorial){
       board.clearRect(0,0,board.canvas.width,board.canvas.height);
       ground.clearRect(0,0,ground.canvas.width,ground.canvas.height);
       ground.drawImage(lilypad, charx, chary, level.scale, level.scale);
@@ -464,6 +475,11 @@ jsPsych.plugins['memory-map'] = (function(){
       //insert screen blackout here
       document.onkeydown = dirCheckK;
       document.ontouchstart = dirCheckM;
+      }
+      else{
+        document.onkeydown = dirCheckK;
+        document.ontouchstart = dirCheckM;
+      }
     }
   
     //function that keeps the canvas element sized appropriately
@@ -561,41 +577,45 @@ jsPsych.plugins['memory-map'] = (function(){
       }
     }
 
+    var RAFid = [];
     restart = function(){
+      wipeWaiters();
       //if or fix
       remap();
       beginGame();
     }
 
+    wipeWaiters = function(){
+      RAFid.forEach(element => {
+        cancelAnimationFrame(element);
+      });
+      RAFid = [];
+    }
+
     var start = null;
-    var waittime = null;
-    var waitfunc = null;
     delay = function(int,func){
-      waittime = int;
-      waitfunc = func;
-      console.log("WAITTIME: "+int);
-      console.log("FUNCTION: "+int);
+      //console.log("WAITTIME: "+int);
+      //console.log("FUNCTION: "+int);
       if(start == null){
         start = Date.now();
       }
       var progress = Date.now() - start;
-      if(progress < waittime){
-        requestAnimationFrame(delayWrap);
+      if(progress < int){
+        //anon func t prevent glob
+        id = requestAnimationFrame(function(timestamp){
+          delay(int,func);
+        });
+        RAFid.push(id);
       }
       else{
         start = null;
-        waittime = null;
-        waitfunc = null;
         func();
         return;
       }
     }
-
-    delayWrap = function(timestamp){
-      delay(waittime,waitfunc);
-    }
   
     beginGame = function(){
+      console.log("GAME START");
       orientation = orientationCheck();
       console.log("orientation: "+orientation);
       //canvas = size * dimension of array
@@ -623,6 +643,8 @@ jsPsych.plugins['memory-map'] = (function(){
       resize();
       bo = false;
       redraw();
+      document.onkeydown = dirCheckK;
+      document.ontouchstart = dirCheckM;
       delay(level.learntime,blackout);
     }
   }

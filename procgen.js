@@ -386,6 +386,7 @@ vertFind = function(arr,startpos){
 
 perlinNoise = function(){}
 
+//var safetyLatch = 0;
 //Quaternary Doubly Deep Depth First Search Generator
 dfsGen = function(x,y,dist){
     var map = [];
@@ -396,11 +397,13 @@ dfsGen = function(x,y,dist){
     var bounds = calculateBounds(map,x,y);
     //console.log(bounds);
     var pos = 0;
+    //0 is assumed to be part of bounds as written
     while(bounds.includes(pos)){
         pos = getRandomInt(map.length);
     }
     //console.log("start: "+pos);
     var start = pos;
+    safetyLatch = 0;
     var nogo = [];
     var path = [];
     var posse = [];
@@ -410,31 +413,82 @@ dfsGen = function(x,y,dist){
     nogo.push(start);
     var temp;
     while(path.length-1 < dist){
+        possibles = [];
+        if(pos === undefined){
+            console.log("NaN Catch");
+            var pos = 0;
+            //0 is assumed to be part of bounds as written
+            while(bounds.includes(pos)){
+                pos = getRandomInt(map.length);
+            }
+            //console.log("start: "+pos);
+            start = pos;
+            nogo = [];
+            path = [];
+            posse = [];
+            possibles = [];
+            nogo.push(start);
+            path.push(start);
+            nogo.push(start);
+        }
+        /*safetyLatch++;
+        if(safetyLatch > 15){
+            console.log("LOOPED TO HELL: "+ safetyLatch);
+            //return;
+        }*/
         posse.push(pos + x);
         posse.push(pos - x);
         posse.push(pos + 1);
         posse.push(pos - 1);
-        var temp = [];
         for(let i = 0; i < posse.length; i++){
-            if(!(bounds.includes(posse[i]) || nogo.includes(posse[i]))
-            &&(!((bounds.includes(posse[i]+x) || nogo.includes(posse[i]+x))
-                &&(bounds.includes(posse[i]-x) || nogo.includes(posse[i]-x))
-                &&(bounds.includes(posse[i]+1) || nogo.includes(posse[i]+1))
-                &&(bounds.includes(posse[i]-1) || nogo.includes(posse[i]-1))
-            ))){
-                temp.push(posse[i]);
+            if(!(bounds.includes(posse[i]) || nogo.includes(posse[i]) || path.includes(posse[i]))){
+                possibles.push(posse[i]);
             }
         }
         posse = [];
-        possibles.push(temp);
 
         if(possibles.length == 0){
             nogo.push(pos);
+            console.log("NO OPTIONS, BACKTRACK: "+pos);
+            //ERROR CHECK FOR OCCASIONAL NaN
+            if(pos === undefined){
+                console.log("NaN Catch");
+                var pos = 0;
+                //0 is assumed to be part of bounds as written
+                while(bounds.includes(pos)){
+                    pos = getRandomInt(map.length);
+                }
+                //console.log("start: "+pos);
+                start = pos;
+                nogo = [];
+                path = [];
+                posse = [];
+                possibles = [];
+                nogo.push(start);
+                path.push(start);
+                nogo.push(start);
+            }
             pos = path.pop();
         }
         else{
-            pos = possibles[path.length-1][getRandomInt(possibles.length)];
+            pos = possibles[getRandomInt(possibles.length)];
             path.push(pos);
+        }
+        var temp = path.pop();
+        var backtrack = path.pop();
+        if((path.includes(temp+x))
+            ||(path.includes(temp-x))
+            ||(path.includes(temp+1))
+            ||(path.includes(temp-1))){
+                nogo.push(temp);
+                path.push(backtrack);
+                pos = backtrack;
+                console.log("RETRACING, BACKTRACK: "+temp);
+        }
+        else{
+            path.push(backtrack);
+            path.push(temp);
+            pos = temp;
         }
     }
     for(let i = 0; i < path.length; i++){
@@ -452,7 +506,8 @@ calculateBounds = function(arr,x,y){
     var bounds = [];
     var imax = arr.length;
     for(let i = 0; i < imax; i++){
-        if(((i+1)%x == 0) || (i%x == 0) || ((i+1)%y == 0) || (i <= x-1) || (i >= ((x*y)-(x+1)))){
+        //|| ((i+1)%y == 0)
+        if(((i+1)%x == 0) || (i%x == 0) || (i <= x-1) || (i >= ((x*y)-(x+1)))){
             bounds.push(i);
         }
     }

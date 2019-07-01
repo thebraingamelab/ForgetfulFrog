@@ -23,14 +23,53 @@
   <script>
     //https://stackoverflow.com/questions/48234696/how-to-put-a-gif-with-canvas/48297226
     var timeline = [];
-    var lives = 3;
+    var lives = 10000;
     var timemax = 3.5;
     var timemin = 2.5;
+    var tutover = false;
     var trial = {
       type: "memory-map",
-      exit_length: 2,
+      exit_length: 30,
       blackout_speed: function(){
         return ((Math.random() * (timemax - timemin))+timemin)*1000;
+      }
+    };
+    var tut1 = {
+      type: "memory-map",
+      game_map: [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+                 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+                 1,1,1,1,1,1,0,0,2,1,1,1,1,1,1,1,
+                 1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,
+                 1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,
+                 1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,
+                 1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,
+                 1,1,1,1,1,1,1,1,-1,1,1,1,1,1,1,1,
+                 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,],
+      tutorial: true,
+      on_finish: function(){
+        var ts = jsPsych.data.get().last(1).filter({trial_type: 'memory-map'}).filter({success: false}).count();
+        if(ts == 1){
+          jsPsych.addNodeToEndOfTimeline(tut1, function(){});
+        }
+        else{
+          jsPsych.addNodeToEndOfTimeline(tut2, function(){});
+        }
+      }
+    };
+    var tut2 = {
+      type: "memory-map",
+      game_map: [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+                 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+                 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+                 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+                 1,1,1,1,1,1,0,0,0,0,2,1,1,1,1,1,
+                 1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,
+                 1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,
+                 1,1,1,1,1,1,1,1,-1,1,1,1,1,1,1,1,
+                 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,],
+      tutorial: false,
+      on_finish: function(){
+        tutover = true;
       }
     };
     function failcheck(){
@@ -60,11 +99,12 @@
         timemin = 2.5;
       }
     }
+
     function postMap(){
       console.log("consec: "+consecutives);
       failcheck();
       spikecheck();
-      if(lives > 0){
+      if((lives > 0)&&(tutover)){
         jsPsych.addNodeToEndOfTimeline(trial, function(){});
         console.log("TIME RANGE: "+timemin+" - "+timemax);
         //console.log("NODE ADDED");
@@ -81,6 +121,7 @@
       button_html: '<button class="jspsych-btn">%choice%</button>'
     };
     timeline.push(instructions);
+    timeline.push(tut1);
     //timeline.push(trial);
     //begin
   jsPsych.init({
