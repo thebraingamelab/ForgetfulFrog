@@ -449,10 +449,10 @@ dfsGen = function(x,y,dist){
 
         if(possibles.length == 0){
             nogo.push(pos);
-            console.log("NO OPTIONS, BACKTRACK: "+pos);
+            //console.log("NO OPTIONS, BACKTRACK: "+pos);
             //ERROR CHECK FOR OCCASIONAL NaN
             if(pos === undefined){
-                console.log("NaN Catch");
+                //console.log("NaN Catch");
                 var pos = 0;
                 //0 is assumed to be part of bounds as written
                 while(bounds.includes(pos)){
@@ -483,7 +483,7 @@ dfsGen = function(x,y,dist){
                 nogo.push(temp);
                 path.push(backtrack);
                 pos = backtrack;
-                console.log("RETRACING, BACKTRACK: "+temp);
+                //console.log("RETRACING, BACKTRACK: "+temp);
         }
         else{
             path.push(backtrack);

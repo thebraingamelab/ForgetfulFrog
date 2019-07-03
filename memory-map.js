@@ -48,14 +48,12 @@ jsPsych.plugins['memory-map'] = (function(){
     //creating canvases that buffer paintings, like layers in photoshop
     var ground = document.createElement("canvas").getContext("2d");
     var pad = document.createElement("canvas").getContext("2d");
-    var midground = document.createElement("canvas").getContext("2d");
-    if(document.querySelector("canvas") == null){
-      display_element.innerHTML = "<div id='canbg' style='background-image: url(img/waterSeamlessLoop.gif);'><canvas id='canvas-board' width='100%' height='100%'></div><div id = info><img id='infoBarImage' src='img/infoBar.png'></div>";
-      var board = document.querySelector('#canvas-board').getContext("2d");
-    }
-    else{      
-      var board = document.querySelector("canvas").getContext("2d");
-    }
+    var frogbuffer = document.createElement("canvas").getContext("2d");
+    display_element.innerHTML = "<div id='canbg' style='background-image: url(img/waterSeamlessLoop.gif);'><canvas id='canvas-board'></canvas><canvas id='tutcan'></canvas></div><div id = info><img id='infoBarImage' src='img/infoBar.png'></div>";
+    var board = document.querySelector('#canvas-board').getContext("2d");
+    var frogboard = document.querySelector('#tutcan').getContext("2d");
+    var candiv = document.querySelector("#canbg");
+
     loadWaiter = function(){
       imgs++;
       if(totimgs == imgs){
@@ -92,7 +90,7 @@ jsPsych.plugins['memory-map'] = (function(){
     lilypad.src = "img/padonly.png"
     const infoBar = document.getElementById("infoBarImage");
 
-    console.log("TIME: "+trial.blackout_speed);
+    //console.log("TIME: "+trial.blackout_speed);
   
     //map data
     var level = {
@@ -123,6 +121,7 @@ jsPsych.plugins['memory-map'] = (function(){
     }
   
     drawMap = function() {
+      console.log('DRAWN');
       //loop over array, checking val of each index to determine fill color (or image)
       for (let index = 0; index < level.map.length; index ++) {
   
@@ -132,13 +131,8 @@ jsPsych.plugins['memory-map'] = (function(){
         // 1 = black 0 = white 2 = exit
         switch(level.map[index]){
           case -1:
-            //BUG: incorrect math to determine tx and ty from index,x,y
-            //console.log(index);
-            //console.log(level.x);
             char.tx = index%level.x;
-            //console.log(char.tx);
             char.ty = Math.floor(index/level.x)+1;
-            //console.log(char.ty);
             level.map[index] = 0;
             trial_data.startpos = index;
             ground.fillStyle = "#ffffff";
@@ -161,9 +155,6 @@ jsPsych.plugins['memory-map'] = (function(){
         }
         //filled rectangle shape
       }
-      if(trial.tutorial){
-        midground.drawImage(ground.canvas, 0, 0, ground.canvas.width, ground.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
-      }
       board.drawImage(ground.canvas, 0, 0, ground.canvas.width, ground.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
     };
     //Draw Player Character
@@ -175,12 +166,13 @@ jsPsych.plugins['memory-map'] = (function(){
         //ground.fillRect(charx, chary, level.scale, level.scale);
         if(dead == false){
           ground.drawImage(lilypad, charx, chary, level.scale, level.scale);
-          ground.drawImage(frog,charx,chary,level.scale,level.scale);
+          frogbuffer.drawImage(frog,charx,chary,level.scale,level.scale);
         }
         else{
           //
         }
         board.drawImage(ground.canvas, 0, 0, ground.canvas.width, ground.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
+        frogboard.drawImage(frogbuffer.canvas, 0, 0, frogbuffer.canvas.width, frogbuffer.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
     };
 
     //redraw moving objects
@@ -256,7 +248,7 @@ jsPsych.plugins['memory-map'] = (function(){
 
     //returns the tilecode at the input x&y coordinates
     collider = function(ix, iy){
-      console.log(ix+((iy-1)*level.x));
+      //console.log(ix+((iy-1)*level.x));
       return level.map[ix+((iy-1)*level.x)];
     }
 
@@ -267,25 +259,21 @@ jsPsych.plugins['memory-map'] = (function(){
       blackout();
       switch(dir){
         case 2:
-          console.log("DOWN");
           char.ty = char.ty + 1;
           trial_data.inputs.push("Down");
           animateHop(Date.now(),1);
           break;
         case 4:
-          console.log("LEFT");
           char.tx = char.tx - 1;
           trial_data.inputs.push("Left");
           animateHop(Date.now(),2);
           break;
         case 6:
-          console.log("RIGHT");
           char.tx = char.tx + 1;
           trial_data.inputs.push("Right");
           animateHop(Date.now(),3);
           break;
         case 8:
-          console.log("UP");
           char.ty = char.ty - 1;
           trial_data.inputs.push("Up");
           animateHop(Date.now(),4);
@@ -296,15 +284,16 @@ jsPsych.plugins['memory-map'] = (function(){
 
     var totshift = 0;
     animateHop = function(timestamp,int){
-      console.log("WIDTH: "+board.canvas.width+"\n HEIGHT: "+board.canvas.height);
+      //console.log("WIDTH: "+board.canvas.width+"\n HEIGHT: "+board.canvas.height);
       document.ontouchstart = null;
       document.onkeydown = null;
       var padcheck = false;
+      if(!trial.tutorial){
       board.clearRect(0,0,board.canvas.width,board.canvas.height);
-      if(trial.tutorial){
-        board.drawImage(midground.canvas, 0, 0, midground.canvas.width, midground.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
-      }
       ground.clearRect(0,0,ground.canvas.width,ground.canvas.height);
+      }
+      frogbuffer.clearRect(0,0,frogbuffer.canvas.width,frogbuffer.canvas.height);
+      frogboard.clearRect(0,0,frogboard.canvas.width,frogboard.canvas.height);
       //shift should be a multiple of 2 since level.scale is as well
       var shift = 8;
       switch(int){
@@ -338,18 +327,17 @@ jsPsych.plugins['memory-map'] = (function(){
           break;
       }
       totshift = totshift+shift;
-      if(padcheck){
-        console.log("PADCHECK");
+      if(padcheck && !trial.tutorial){
         pad.clearRect(0,0,pad.canvas.width,pad.canvas.height);
         pad.drawImage(lilypad, char.tx*level.scale, (char.ty-1)*level.scale, level.scale, level.scale);
-        console.log("TX: "+char.tx*level.scale+"\nTY: "+(char.ty-1)*level.scale)
+        //console.log("TX: "+char.tx*level.scale+"\nTY: "+(char.ty-1)*level.scale)
         pad.globalAlpha = totshift/level.scale;
         board.drawImage(pad.canvas, 0, 0, pad.canvas.width, pad.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
         pad.clearRect(0,0,pad.canvas.width,pad.canvas.height);
       }
-      ground.drawImage(frog,charx,chary,level.scale,level.scale);
+      frogbuffer.drawImage(frog,charx,chary,level.scale,level.scale);
+      frogboard.drawImage(frogbuffer.canvas, 0, 0, frogbuffer.canvas.width, frogbuffer.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
       board.drawImage(ground.canvas, 0, 0, ground.canvas.width, ground.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
-      console.log("redrawn?");
       if(totshift<level.scale){
         switch(int){
           case 1:
@@ -372,7 +360,7 @@ jsPsych.plugins['memory-map'] = (function(){
         document.onkeydown = dirCheckK;
         document.ontouchstart = dirCheckM;
         if(level.walkable.includes(collider(char.tx,char.ty))){
-          redraw();
+          if(!trial.tutorial){redraw();}
           wincheck();
         }
         else{
@@ -398,7 +386,6 @@ jsPsych.plugins['memory-map'] = (function(){
 
     //handles loss
     die = function(){
-      console.log("u ded");
       document.onkeydown = null;
       document.ontouchstart = null;
       bo = false;
@@ -407,12 +394,11 @@ jsPsych.plugins['memory-map'] = (function(){
       redraw();
       //192,64
       drawMap();
+      frogbuffer.clearRect(0,0,frogbuffer.canvas.width,frogbuffer.canvas.height);
+      frogboard.clearRect(0,0,frogboard.canvas.width,frogboard.canvas.height);
       ground.drawImage(cross, charx,chary, level.scale, level.scale);
       board.drawImage(ground.canvas, 0, 0, ground.canvas.width, ground.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
-      console.log("CROSScx: "+charx);
-      console.log("CROSScy: "+chary);
       bo = false;
-      console.log(cross);
       setTimeout(lose,500);
     }
 
@@ -434,7 +420,6 @@ jsPsych.plugins['memory-map'] = (function(){
     //Separate check for win, so you are actualy displayed ON the wincon
     wincheck = function(){
       if(level.map[char.tx+((char.ty-1)*level.x)] == 2){
-        console.log("YOU WIN!");
         //block input whilewin screen is up
         document.onkeydown = null;
         document.ontouchstart = null;
@@ -459,7 +444,7 @@ jsPsych.plugins['memory-map'] = (function(){
       bo = false;
       mapGen();
       resize();
-      console.log(level);
+      //console.log(level);
       setTimeout(blackout, level.learntime);
     }
 
@@ -469,7 +454,8 @@ jsPsych.plugins['memory-map'] = (function(){
       board.clearRect(0,0,board.canvas.width,board.canvas.height);
       ground.clearRect(0,0,ground.canvas.width,ground.canvas.height);
       ground.drawImage(lilypad, charx, chary, level.scale, level.scale);
-      ground.drawImage(frog,charx,chary,level.scale,level.scale);
+      frogbuffer.drawImage(frog,charx,chary,level.scale,level.scale);
+      frogboard.drawImage(frogbuffer.canvas, 0, 0, frogbuffer.canvas.width, frogbuffer.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
       board.drawImage(ground.canvas, 0, 0, ground.canvas.width, ground.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
       bo = true;
       //insert screen blackout here
@@ -496,21 +482,29 @@ jsPsych.plugins['memory-map'] = (function(){
         //board.canvas.height = Math.floor(board.canvas.width * 0.5625);
         board.canvas.width = Math.floor(document.documentElement.clientWidth);
         board.canvas.height = Math.floor(document.documentElement.clientHeight);
+        frogboard.canvas.width = Math.floor(document.documentElement.clientWidth);
+        frogboard.canvas.height = Math.floor(document.documentElement.clientHeight);
+        candiv.style.width = Math.floor(document.documentElement.clientWidth) + "px";
+        candiv.style.height = Math.floor(document.documentElement.clientHeight) + "px";
         infoBar.style.width = 30 + "%";
         infoBar.style.height = 20 + "%";
       }
       else{
-        board.canvas.width = Math.floor(document.documentElement.clientWidth * .9);
+        board.canvas.width = Math.floor(document.documentElement.clientWidth);
         board.canvas.height = Math.floor(document.documentElement.clientHeight * .9);
+        frogboard.canvas.width = Math.floor(document.documentElement.clientWidth);
+        frogboard.canvas.height = Math.floor(document.documentElement.clientHeight * .9);
+        candiv.style.width = Math.floor(document.documentElement.clientWidth) + "px";
+        candiv.style.height = Math.floor(document.documentElement.clientHeight * .9) + "px";
         infoBar.style.width = 50 + "%";
         infoBar.style.height = 10 + "%";
       }
       if(((level.x > level.y)&&(window.innerHeight>window.innerWidth))||((level.y>level.x)&&(window.innerWidth>window.innerHeight))){
         orientationFix();
-        console.log("fixed");
+        //console.log("fixed");
       }
       redraw();
-      console.log(level);
+      //console.log(level);
     }
 
     //0 = portrait
@@ -535,46 +529,6 @@ jsPsych.plugins['memory-map'] = (function(){
       ground.canvas.height = level.y * level.scale;
       pad.canvas.width = level.x * level.scale;
       pad.canvas.height = level.y * level.scale;
-     // */
-     /*
-      var temp = level.x;
-      level.x = level.y;
-      level.y = temp;
-      ground.canvas.width = board.canvas.width;
-      ground.canvas.height = board.canvas.height;;
-      pad.canvas.width = board.canvas.width;
-      pad.canvas.height = board.canvas.height;
-      console.log("fixed");*/
-    }
-
-    var timeouts = [];
-    oflip = function(){
-      //bo = false;
-      for(let i = 0; i<timeouts.length; i++){
-        clearTimeout(timeouts[i]);
-      }
-      board.clearRect(0,0,board.canvas.width,board.canvas.height);
-      ground.clearRect(0,0,ground.canvas.width,ground.canvas.height);
-      orientationFix();
-      timeouts.push(setTimeout(function(){
-        ground.fillStyle = "#000000";
-        ground.clearRect(0,0,ground.canvas.width,ground.canvas.height);
-        ground.fillRect(0,0,ground.canvas.width,ground.canvas.height);
-        ground.drawImage(rot,0,0,ground.canvas.width,ground.canvas.height);
-        board.drawImage(ground.canvas, 0, 0, ground.canvas.width, ground.canvas.height, 0, 0, board.canvas.width, board.canvas.height)}
-        ,100));
-        timeouts.push(setTimeout(function(){ground.clearRect(0,0,ground.canvas.width,ground.canvas.height)},100));
-        timeouts.push(setTimeout(remap,800));
-        timeouts.push(setTimeout(redraw,800));
-    }
-
-    oflip2 = function(){
-      orientationFix();
-      redraw();
-      if(((level.x > level.y)&&(window.innerHeight>window.innerWidth))||((level.y>level.x)&&(window.innerWidth>window.innerHeight))){
-        orientationFix();
-        console.log("fixed");
-      }
     }
 
     var RAFid = [];
@@ -594,8 +548,6 @@ jsPsych.plugins['memory-map'] = (function(){
 
     var start = null;
     delay = function(int,func){
-      //console.log("WAITTIME: "+int);
-      //console.log("FUNCTION: "+int);
       if(start == null){
         start = Date.now();
       }
@@ -615,14 +567,16 @@ jsPsych.plugins['memory-map'] = (function(){
     }
   
     beginGame = function(){
-      console.log("GAME START");
+      //console.log("GAME START");
       orientation = orientationCheck();
-      console.log("orientation: "+orientation);
+      //console.log("orientation: "+orientation);
       //canvas = size * dimension of array
       ground.canvas.width = level.x * level.scale;
       ground.canvas.height = level.y * level.scale;
       pad.canvas.width = level.x * level.scale;
       pad.canvas.height = level.y * level.scale;
+      frogbuffer.canvas.width = level.x * level.scale;
+      frogbuffer.canvas.height = level.y * level.scale;
       if(trial.game_map != null){
         level.map = trial_data.map;
       }
@@ -642,7 +596,7 @@ jsPsych.plugins['memory-map'] = (function(){
       //this sizes up the window properly the first time
       resize();
       bo = false;
-      redraw();
+      //redraw();
       document.onkeydown = dirCheckK;
       document.ontouchstart = dirCheckM;
       delay(level.learntime,blackout);

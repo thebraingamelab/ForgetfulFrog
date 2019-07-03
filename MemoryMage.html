@@ -76,14 +76,14 @@
       var ts = jsPsych.data.get().last(1).filter({trial_type: 'memory-map'}).filter({success: false}).count();
       if(ts == 1){
         lives--;
-        console.log("loss detected, lives: "+lives);
+        //console.log("loss detected, lives: "+lives);
       }
     }
     var consecutives = 0;
     function spikecheck(){
       var ts = jsPsych.data.get().last(1).filter({trial_type: 'memory-map'}).filter({success: true}).count();
       if(ts == 1){
-        console.log("win detected");
+        //console.log("win detected");
         timemax = timemax - .5;
         timemin = timemin - .5;
         //CHANGE TIME VAR
@@ -101,12 +101,12 @@
     }
 
     function postMap(){
-      console.log("consec: "+consecutives);
+      //console.log("consec: "+consecutives);
       failcheck();
       spikecheck();
       if((lives > 0)&&(tutover)){
         jsPsych.addNodeToEndOfTimeline(trial, function(){});
-        console.log("TIME RANGE: "+timemin+" - "+timemax);
+        //console.log("TIME RANGE: "+timemin+" - "+timemax);
         //console.log("NODE ADDED");
         }
     }
