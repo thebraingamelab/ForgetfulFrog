@@ -20,7 +20,7 @@ jsPsych.plugins['memory-map'] = (function(){
       column_height:{
         type: jsPsych.plugins.parameterType.INT,
         pretty_name: "Column height",
-        default: 9,
+        default: 16,
         description: "The amount of elements in a column of the map"
       },
       blackout_speed:{
@@ -40,6 +40,18 @@ jsPsych.plugins['memory-map'] = (function(){
         pretty_name: 'Tutorial Marker',
         default: false,
         description: "A flag that indicates if it is a stage to not blackout as a tutorial"
+      },
+      lives:{
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Lives',
+        default: undefined,
+        description: "The number of lives the player has left before game over"
+      },
+      wins:{
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Score',
+        default: undefined,
+        description: "the number of wins the player has"
       }
     }
   }
@@ -49,10 +61,14 @@ jsPsych.plugins['memory-map'] = (function(){
     var ground = document.createElement("canvas").getContext("2d");
     var pad = document.createElement("canvas").getContext("2d");
     var frogbuffer = document.createElement("canvas").getContext("2d");
-    display_element.innerHTML = "<div id='canbg' style='background-image: url(img/waterSeamlessLoop.gif);'><canvas id='canvas-board'></canvas><canvas id='tutcan'></canvas></div><div id = info><img id='infoBarImage' src='img/infoBar.png'></div>";
+    if(document.querySelector("#canbg") == null){
+      display_element.innerHTML = "<div id='canbg' style='background-image: url(img/waterSeamlessLoop.gif);'><canvas id='canvas-board'></canvas><canvas id='charcan'></canvas></div><div id ='infoBar'><div id='infoBarImage'></div><span id='leveltxt'></span><span id='livestxt'></span></div>";
+    }
     var board = document.querySelector('#canvas-board').getContext("2d");
-    var frogboard = document.querySelector('#tutcan').getContext("2d");
+    var frogboard = document.querySelector('#charcan').getContext("2d");
     var candiv = document.querySelector("#canbg");
+    var lives = document.querySelector("#livestxt");
+    var levels = document.querySelector("#leveltxt");
 
     loadWaiter = function(){
       imgs++;
@@ -68,19 +84,19 @@ jsPsych.plugins['memory-map'] = (function(){
       }
     }
     var imgs = 0;
-    var totimgs = 5;
+    var totimgs = 2;
     //blackout time switch
     var bo = false;
     var dead = false;
     //LOAD IMG ASSETS
     var check = document.createElement("img");
-    check.onload = loadWaiter;
+    //check.onload = loadWaiter;
     check.src = "img/check.png";
     var cross = document.createElement("img");
-    cross.onload = loadWaiter;
+    //cross.onload = loadWaiter;
     cross.src = "img/cross.png";
     var rot = document.createElement("img");
-    rot.onload = loadWaiter;
+    //rot.onload = loadWaiter;
     rot.src = "img/rot.png";
     var frog = document.createElement("img");
     frog.onload = loadWaiter;
@@ -88,7 +104,7 @@ jsPsych.plugins['memory-map'] = (function(){
     var lilypad = document.createElement("img");
     lilypad.onload = loadWaiter;
     lilypad.src = "img/padonly.png"
-    const infoBar = document.getElementById("infoBarImage");
+    const infoBar = document.getElementById("infoBar");
 
     //console.log("TIME: "+trial.blackout_speed);
   
@@ -99,7 +115,9 @@ jsPsych.plugins['memory-map'] = (function(){
       x: trial.row_length,
       y: trial.column_height,
       walkable: [0,2],
-      learntime: trial.blackout_speed
+      learntime: trial.blackout_speed,
+      lives: trial.lives,
+      wins: trial.wins
     }
 
     //character data
@@ -120,8 +138,12 @@ jsPsych.plugins['memory-map'] = (function(){
       "device": navigator.userAgent
     }
   
+    var mapcache = null;
     drawMap = function() {
-      console.log('DRAWN');
+      if(mapcache != null){
+        board.drawImage(mapcache.canvas, 0, 0, mapcache.canvas.width, mapcache.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
+        return;
+      }
       //loop over array, checking val of each index to determine fill color (or image)
       for (let index = 0; index < level.map.length; index ++) {
   
@@ -156,6 +178,7 @@ jsPsych.plugins['memory-map'] = (function(){
         //filled rectangle shape
       }
       board.drawImage(ground.canvas, 0, 0, ground.canvas.width, ground.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
+      mapcache = ground;
     };
     //Draw Player Character
     charrender = function(){
@@ -177,11 +200,13 @@ jsPsych.plugins['memory-map'] = (function(){
 
     //redraw moving objects
     redraw = function(){
+      if(bo ==false){
         drawMap();
-        charrender();
-        if(bo == true){
-          blackout();
-        }
+      }
+      charrender();
+      if(bo == true){
+        blackout();
+      }
     }
 
     //checks what key pressed, then moves char as appropriate
@@ -279,7 +304,6 @@ jsPsych.plugins['memory-map'] = (function(){
           animateHop(Date.now(),4);
           break;
       }
-      //redraw();
     }
 
     var totshift = 0;
@@ -360,7 +384,10 @@ jsPsych.plugins['memory-map'] = (function(){
         document.onkeydown = dirCheckK;
         document.ontouchstart = dirCheckM;
         if(level.walkable.includes(collider(char.tx,char.ty))){
-          if(!trial.tutorial){redraw();}
+          /*if(!trial.tutorial){
+            console.log("REDRAW: ANIMATEhop");
+            redraw();
+          }*/
           wincheck();
         }
         else{
@@ -390,16 +417,16 @@ jsPsych.plugins['memory-map'] = (function(){
       document.ontouchstart = null;
       bo = false;
       dead = true;
-      //redraw char with dead flag on
+      console.log("REDRAW: DIE");
       redraw();
       //192,64
-      drawMap();
+      //drawMap();
       frogbuffer.clearRect(0,0,frogbuffer.canvas.width,frogbuffer.canvas.height);
       frogboard.clearRect(0,0,frogboard.canvas.width,frogboard.canvas.height);
       ground.drawImage(cross, charx,chary, level.scale, level.scale);
       board.drawImage(ground.canvas, 0, 0, ground.canvas.width, ground.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
       bo = false;
-      setTimeout(lose,500);
+      delay(500,lose);
     }
 
     lose = function(){
@@ -424,13 +451,12 @@ jsPsych.plugins['memory-map'] = (function(){
         document.onkeydown = null;
         document.ontouchstart = null;
         bo = false;
-        redraw();
+        drawMap();
         ground.drawImage(check,0,0,ground.canvas.width,ground.canvas.height);
         board.drawImage(ground.canvas, 0, 0, ground.canvas.width, ground.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
         //console.log(check);
         bo = false;
-        //setTimeout(remap, 500);
-        setTimeout(win,500);
+        delay(500,win);
       }
     }
 
@@ -445,7 +471,7 @@ jsPsych.plugins['memory-map'] = (function(){
       mapGen();
       resize();
       //console.log(level);
-      setTimeout(blackout, level.learntime);
+      delay(level.learntime,blackout);
     }
 
     blackout = function(){
@@ -470,45 +496,62 @@ jsPsych.plugins['memory-map'] = (function(){
   
     //function that keeps the canvas element sized appropriately
     resize = function(event){
-      /*board.canvas.width = Math.floor(document.documentElement.clientWidth * .9);
-      board.canvas.height = Math.floor(document.documentElement.clientHeight * .9);
-      ground.canvas.width = Math.floor(document.documentElement.clientWidth * .9);
-      ground.canvas.height = Math.floor(document.documentElement.clientHeight * .9);
-      if (board.canvas.width > document.documentElement.clientHeight) {
-        board.canvas.width = Math.floor(document.documentElement.clientHeight);
-      }*/
+      var ratio = 1;
       //ORIENTATION DETECTION
       if(window.innerHeight < window.innerWidth){
+        ratio = window.innerHeight/window.innerWidth;
+        board.canvas.style.top = "0px";
+        frogboard.canvas.style.top = "0px";
         //board.canvas.height = Math.floor(board.canvas.width * 0.5625);
-        board.canvas.width = Math.floor(document.documentElement.clientWidth);
+        board.canvas.width = Math.floor(document.documentElement.clientWidth * ratio);
         board.canvas.height = Math.floor(document.documentElement.clientHeight);
-        frogboard.canvas.width = Math.floor(document.documentElement.clientWidth);
+        frogboard.canvas.width = Math.floor(document.documentElement.clientWidth * ratio);
         frogboard.canvas.height = Math.floor(document.documentElement.clientHeight);
         candiv.style.width = Math.floor(document.documentElement.clientWidth) + "px";
         candiv.style.height = Math.floor(document.documentElement.clientHeight) + "px";
         infoBar.style.width = 30 + "%";
         infoBar.style.height = 20 + "%";
+        board.canvas.style.left = ((document.documentElement.clientWidth/2) - document.querySelector('#canvas-board').offsetWidth/2) + "px";
+        frogboard.canvas.style.left = ((document.documentElement.clientWidth/2) - document.querySelector('#charcan').offsetWidth/2) + "px";
       }
       else{
+        ratio = window.innerWidth/window.innerHeight;
+        board.canvas.style.left = "0px";
+        frogboard.canvas.style.left = "0px";
         board.canvas.width = Math.floor(document.documentElement.clientWidth);
-        board.canvas.height = Math.floor(document.documentElement.clientHeight * .9);
+        board.canvas.height = Math.floor(document.documentElement.clientHeight * ratio);
         frogboard.canvas.width = Math.floor(document.documentElement.clientWidth);
-        frogboard.canvas.height = Math.floor(document.documentElement.clientHeight * .9);
+        frogboard.canvas.height = Math.floor(document.documentElement.clientHeight * ratio);
         candiv.style.width = Math.floor(document.documentElement.clientWidth) + "px";
-        candiv.style.height = Math.floor(document.documentElement.clientHeight * .9) + "px";
+        candiv.style.height = Math.floor(document.documentElement.clientHeight) + "px";
         infoBar.style.width = 50 + "%";
         infoBar.style.height = 10 + "%";
+        board.canvas.style.top = ((document.documentElement.clientHeight/2) - document.querySelector('#canvas-board').offsetHeight/2) + "px";
+        frogboard.canvas.style.top = ((document.documentElement.clientHeight/2) - document.querySelector('#charcan').offsetHeight/2) + "px";
       }
       if(((level.x > level.y)&&(window.innerHeight>window.innerWidth))||((level.y>level.x)&&(window.innerWidth>window.innerHeight))){
+        if(window.innerHeight>window.innerWidth){}
+        if(window.innerHeight<window.innerWidth){}
         orientationFix();
         //console.log("fixed");
       }
+      console.log("REDRAW: RESIZE");
       redraw();
       //console.log(level);
     }
 
-    //0 = portrait
-    var orientation;
+
+
+    //dir, 0 = ccw 1 = cw
+    rotate = function(map, dir){
+      var new_map = map;
+	    for(let j = 0; j < level.y-1; j++){
+		    for (let i = 0; i < level.x-1; i++){
+          new_map[((i*level.x)-1)+j] = map[(j*level.x)+i];
+        }
+      }
+      return new_map;
+    }
 
     //0 = portrait
     orientationCheck = function(){
@@ -577,6 +620,8 @@ jsPsych.plugins['memory-map'] = (function(){
       pad.canvas.height = level.y * level.scale;
       frogbuffer.canvas.width = level.x * level.scale;
       frogbuffer.canvas.height = level.y * level.scale;
+      lives.innerText = "LIVES";
+      levels.innerText = "LEVEL";
       if(trial.game_map != null){
         level.map = trial_data.map;
       }
@@ -586,17 +631,23 @@ jsPsych.plugins['memory-map'] = (function(){
       infoBar.style.left = 0 + "px";
       infoBar.style.top = 5 + "px";
       infoBar.style.zIndex = "1";
+      var lvls = "LEVEL: ";
+      for(let i = 1; i<6;i++){
+        if(i <= trial.wins){lvls = lvls+="* ";}
+        else{lvls = lvls+="o ";}
+      }
+      levels.innerText = lvls;
+      lives.innerText = "LIVES: "+trial.lives;
       /*
       ground.drawImage(infoBar,0,0,200,100);
       board.drawImage(ground.canvas, 0, 0, ground.canvas.width, ground.canvas.height, 0, 0, board.canvas.width, board.canvas.height);*/
       //this calls resize everytime the window changes size
-      window.addEventListener("resize", restart, {passive:true});
+      window.addEventListener("resize", resize, {passive:true});
       //window.addEventListener("orientationchange", restart, {passive:true});
       
       //this sizes up the window properly the first time
       resize();
       bo = false;
-      //redraw();
       document.onkeydown = dirCheckK;
       document.ontouchstart = dirCheckM;
       delay(level.learntime,blackout);

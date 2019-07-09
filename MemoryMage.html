@@ -24,12 +24,16 @@
     //https://stackoverflow.com/questions/48234696/how-to-put-a-gif-with-canvas/48297226
     var timeline = [];
     var lives = 10000;
+    //init to -n where n is # of tutorial stages
+    var consecutives = -2;
     var timemax = 3.5;
     var timemin = 2.5;
     var tutover = false;
     var trial = {
       type: "memory-map",
-      exit_length: 30,
+      exit_length: 4,
+      lives: function(){return lives;},
+      wins: function(){return consecutives},
       blackout_speed: function(){
         return ((Math.random() * (timemax - timemin))+timemin)*1000;
       }
@@ -38,14 +42,24 @@
       type: "memory-map",
       game_map: [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
                  1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+                 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+                 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+                 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
                  1,1,1,1,1,1,0,0,2,1,1,1,1,1,1,1,
                  1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,
                  1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,
                  1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,
                  1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,
+                 1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,
                  1,1,1,1,1,1,1,1,-1,1,1,1,1,1,1,1,
+                 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+                 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+                 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
                  1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,],
       tutorial: true,
+      column_height: 16,
+      lives: function(){return lives;},
+      wins: function(){return consecutives},
       on_finish: function(){
         var ts = jsPsych.data.get().last(1).filter({trial_type: 'memory-map'}).filter({success: false}).count();
         if(ts == 1){
@@ -62,14 +76,24 @@
                  1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
                  1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
                  1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+                 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+                 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+                 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
                  1,1,1,1,1,1,0,0,0,0,2,1,1,1,1,1,
                  1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,
                  1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,
+                 1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,
                  1,1,1,1,1,1,1,1,-1,1,1,1,1,1,1,1,
+                 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+                 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+                 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
                  1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,],
       tutorial: false,
+      lives: function(){return lives;},
+      wins: function(){return consecutives},
       on_finish: function(){
         tutover = true;
+        consecutives = 0;
       }
     };
     function failcheck(){
@@ -79,10 +103,9 @@
         //console.log("loss detected, lives: "+lives);
       }
     }
-    var consecutives = 0;
     function spikecheck(){
       var ts = jsPsych.data.get().last(1).filter({trial_type: 'memory-map'}).filter({success: true}).count();
-      if(ts == 1){
+      if((ts == 1)&&(consecutives>=0)){
         //console.log("win detected");
         timemax = timemax - .5;
         timemin = timemin - .5;
@@ -99,7 +122,6 @@
         timemin = 2.5;
       }
     }
-
     function postMap(){
       //console.log("consec: "+consecutives);
       failcheck();
@@ -108,7 +130,7 @@
         jsPsych.addNodeToEndOfTimeline(trial, function(){});
         //console.log("TIME RANGE: "+timemin+" - "+timemax);
         //console.log("NODE ADDED");
-        }
+      }
     }
     var instructions = {
       type: "html-button-response",

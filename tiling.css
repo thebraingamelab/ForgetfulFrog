@@ -39,29 +39,61 @@
     left: 0;
   }
 
-  #canvas-board {
+  #canvas-board {/*
     width: 100%;
-    height: 100%;
+    height: 100%;*/
     z-index: 1;
-    position: absolute;
+    position: absolute;/*
     top: 0;
-    left: 0;
+    left: 0;*/
+    align-content:center;
   }
 
-  #tutcan {
+  #charcan {/*
+    width: 100%;
+    height: 100%;*/
+    z-index: 2;
+    position: absolute;/*
+    top: 0;
+    left: 0;*/
+    align-content:center;
+  }
+
+  #coverup {
     width: 100%;
     height: 100%;
-    z-index: 2;
+    z-index: 3;
     position: absolute;
     top: 0;
     left: 0;
   }
 
-  #infoBarImage{
+  #infoBar {
+    top: 0;
+    left: 0;
     width: 50%;
     height: 10%;
     position: absolute;
+  }
+
+  #infoBarImage{
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background: black;
     opacity: .6;
+  }
+
+  #livestxt {
+    position: absolute;
+    top: 60%;
+    left: 40%;
+  }
+
+  #leveltxt {
+    position: absolute;
+    top: 10%;
+    left: 40%;
   }
 
   #check{
