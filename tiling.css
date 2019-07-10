@@ -59,21 +59,13 @@
     align-content:center;
   }
 
-  #coverup {
-    width: 100%;
-    height: 100%;
-    z-index: 3;
-    position: absolute;
-    top: 0;
-    left: 0;
-  }
-
   #infoBar {
     top: 0;
     left: 0;
     width: 50%;
     height: 10%;
     position: absolute;
+    z-index: 4;
   }
 
   #infoBarImage{
@@ -87,13 +79,13 @@
   #livestxt {
     position: absolute;
     top: 60%;
-    left: 40%;
+    left: 10%;
   }
 
   #leveltxt {
     position: absolute;
     top: 10%;
-    left: 40%;
+    left: 10%;
   }
 
   #check{

@@ -65,6 +65,7 @@ jsPsych.plugins['memory-map'] = (function(){
       display_element.innerHTML = "<div id='canbg' style='background-image: url(img/waterSeamlessLoop.gif);'><canvas id='canvas-board'></canvas><canvas id='charcan'></canvas></div><div id ='infoBar'><div id='infoBarImage'></div><span id='leveltxt'></span><span id='livestxt'></span></div>";
     }
     var board = document.querySelector('#canvas-board').getContext("2d");
+    var wipers = document.querySelector('#canvas-board');
     var frogboard = document.querySelector('#charcan').getContext("2d");
     var candiv = document.querySelector("#canbg");
     var lives = document.querySelector("#livestxt");
@@ -84,7 +85,7 @@ jsPsych.plugins['memory-map'] = (function(){
       }
     }
     var imgs = 0;
-    var totimgs = 2;
+    var totimgs = 3;
     //blackout time switch
     var bo = false;
     var dead = false;
@@ -103,7 +104,10 @@ jsPsych.plugins['memory-map'] = (function(){
     frog.src = "img/frog.png";
     var lilypad = document.createElement("img");
     lilypad.onload = loadWaiter;
-    lilypad.src = "img/padonly.png"
+    lilypad.src = "img/padonly.png";
+    var fly = document.createElement("img");
+    fly.onload = loadWaiter;
+    fly.src = "img/flypad.png";
     const infoBar = document.getElementById("infoBar");
 
     //console.log("TIME: "+trial.blackout_speed);
@@ -138,12 +142,7 @@ jsPsych.plugins['memory-map'] = (function(){
       "device": navigator.userAgent
     }
   
-    var mapcache = null;
     drawMap = function() {
-      if(mapcache != null){
-        board.drawImage(mapcache.canvas, 0, 0, mapcache.canvas.width, mapcache.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
-        return;
-      }
       //loop over array, checking val of each index to determine fill color (or image)
       for (let index = 0; index < level.map.length; index ++) {
   
@@ -157,28 +156,21 @@ jsPsych.plugins['memory-map'] = (function(){
             char.ty = Math.floor(index/level.x)+1;
             level.map[index] = 0;
             trial_data.startpos = index;
-            ground.fillStyle = "#ffffff";
             break;
           case 0:
-            ground.fillStyle = "#ffffff";
             //ground.fillRect((index % level.x) * level.scale, Math.floor(index/level.x) * level.scale, level.scale, level.scale);
             ground.drawImage(lilypad, (index % level.x) * level.scale, Math.floor(index/level.x) * level.scale, level.scale, level.scale);
-            board.drawImage(ground.canvas, 0, 0, ground.canvas.width, ground.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
             break;
           case 1:
-            ground.fillStyle = "#000000";
-            //ground.drawImage(water, (index % level.x) * level.scale, Math.floor(index/level.x) * level.scale, level.scale, level.scale);
-            //board.drawImage(ground.canvas, 0, 0, ground.canvas.width, ground.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
+            //DO NOTHING, BG IS WATER
             break;
           case 2:
-            ground.fillStyle = "#0000ff";
-            ground.fillRect((index % level.x) * level.scale, Math.floor(index/level.x) * level.scale, level.scale, level.scale);
+            ground.drawImage(fly, (index % level.x) * level.scale, Math.floor(index/level.x) * level.scale, level.scale, level.scale);
             break;
         }
         //filled rectangle shape
       }
       board.drawImage(ground.canvas, 0, 0, ground.canvas.width, ground.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
-      mapcache = ground;
     };
     //Draw Player Character
     charrender = function(){
@@ -312,9 +304,10 @@ jsPsych.plugins['memory-map'] = (function(){
       document.ontouchstart = null;
       document.onkeydown = null;
       var padcheck = false;
-      if(!trial.tutorial){
+      if(!trial.tutorial){/*
       board.clearRect(0,0,board.canvas.width,board.canvas.height);
-      ground.clearRect(0,0,ground.canvas.width,ground.canvas.height);
+      ground.clearRect(0,0,ground.canvas.width,ground.canvas.height);*/
+      wipers.style.opacity = 0;
       }
       frogbuffer.clearRect(0,0,frogbuffer.canvas.width,frogbuffer.canvas.height);
       frogboard.clearRect(0,0,frogboard.canvas.width,frogboard.canvas.height);
@@ -356,12 +349,12 @@ jsPsych.plugins['memory-map'] = (function(){
         pad.drawImage(lilypad, char.tx*level.scale, (char.ty-1)*level.scale, level.scale, level.scale);
         //console.log("TX: "+char.tx*level.scale+"\nTY: "+(char.ty-1)*level.scale)
         pad.globalAlpha = totshift/level.scale;
-        board.drawImage(pad.canvas, 0, 0, pad.canvas.width, pad.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
+        frogboard.drawImage(pad.canvas, 0, 0, pad.canvas.width, pad.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
         pad.clearRect(0,0,pad.canvas.width,pad.canvas.height);
       }
       frogbuffer.drawImage(frog,charx,chary,level.scale,level.scale);
       frogboard.drawImage(frogbuffer.canvas, 0, 0, frogbuffer.canvas.width, frogbuffer.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
-      board.drawImage(ground.canvas, 0, 0, ground.canvas.width, ground.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
+      //board.drawImage(ground.canvas, 0, 0, ground.canvas.width, ground.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
       if(totshift<level.scale){
         switch(int){
           case 1:
@@ -390,9 +383,9 @@ jsPsych.plugins['memory-map'] = (function(){
           }*/
           wincheck();
         }
-        else{
+        else{/*
           board.clearRect(0,0,board.canvas.width,board.canvas.height);
-          ground.clearRect(0,0,ground.canvas.width,ground.canvas.height);
+          ground.clearRect(0,0,ground.canvas.width,ground.canvas.height);*/
           die();
         }
       }
@@ -418,9 +411,9 @@ jsPsych.plugins['memory-map'] = (function(){
       bo = false;
       dead = true;
       console.log("REDRAW: DIE");
-      redraw();
-      //192,64
+      wipers.style.opacity = 1;
       //drawMap();
+      //192,64
       frogbuffer.clearRect(0,0,frogbuffer.canvas.width,frogbuffer.canvas.height);
       frogboard.clearRect(0,0,frogboard.canvas.width,frogboard.canvas.height);
       ground.drawImage(cross, charx,chary, level.scale, level.scale);
@@ -448,12 +441,13 @@ jsPsych.plugins['memory-map'] = (function(){
     wincheck = function(){
       if(level.map[char.tx+((char.ty-1)*level.x)] == 2){
         //block input whilewin screen is up
+        wipers.style.opacity = 1;
         document.onkeydown = null;
         document.ontouchstart = null;
         bo = false;
-        drawMap();
-        ground.drawImage(check,0,0,ground.canvas.width,ground.canvas.height);
-        board.drawImage(ground.canvas, 0, 0, ground.canvas.width, ground.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
+        //drawMap();
+        frogbuffer.drawImage(check,0,0,ground.canvas.width,ground.canvas.height);
+        frogboard.drawImage(frogbuffer.canvas, 0, 0, frogbuffer.canvas.width, frogbuffer.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
         //console.log(check);
         bo = false;
         delay(500,win);
@@ -477,12 +471,17 @@ jsPsych.plugins['memory-map'] = (function(){
     blackout = function(){
       //board.fillStyle = "#000000";
       if(!trial.tutorial){
+      /*
       board.clearRect(0,0,board.canvas.width,board.canvas.height);
       ground.clearRect(0,0,ground.canvas.width,ground.canvas.height);
       ground.drawImage(lilypad, charx, chary, level.scale, level.scale);
       frogbuffer.drawImage(frog,charx,chary,level.scale,level.scale);
       frogboard.drawImage(frogbuffer.canvas, 0, 0, frogbuffer.canvas.width, frogbuffer.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
-      board.drawImage(ground.canvas, 0, 0, ground.canvas.width, ground.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
+      board.drawImage(ground.canvas, 0, 0, ground.canvas.width, ground.canvas.height, 0, 0, board.canvas.width, board.canvas.height);*/ 
+      frogbuffer.drawImage(lilypad, char.tx*level.scale, (char.ty-1)*level.scale, level.scale, level.scale);
+      frogbuffer.drawImage(frog,charx,chary,level.scale,level.scale);
+      frogboard.drawImage(frogbuffer.canvas, 0, 0, frogbuffer.canvas.width, frogbuffer.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
+      wipers.style.opacity = 0;
       bo = true;
       //insert screen blackout here
       document.onkeydown = dirCheckK;
@@ -509,8 +508,8 @@ jsPsych.plugins['memory-map'] = (function(){
         frogboard.canvas.height = Math.floor(document.documentElement.clientHeight);
         candiv.style.width = Math.floor(document.documentElement.clientWidth) + "px";
         candiv.style.height = Math.floor(document.documentElement.clientHeight) + "px";
-        infoBar.style.width = 30 + "%";
-        infoBar.style.height = 20 + "%";
+        infoBar.style.width = 20 + "%";
+        infoBar.style.height = 15 + "%";
         board.canvas.style.left = ((document.documentElement.clientWidth/2) - document.querySelector('#canvas-board').offsetWidth/2) + "px";
         frogboard.canvas.style.left = ((document.documentElement.clientWidth/2) - document.querySelector('#charcan').offsetWidth/2) + "px";
       }
@@ -524,7 +523,7 @@ jsPsych.plugins['memory-map'] = (function(){
         frogboard.canvas.height = Math.floor(document.documentElement.clientHeight * ratio);
         candiv.style.width = Math.floor(document.documentElement.clientWidth) + "px";
         candiv.style.height = Math.floor(document.documentElement.clientHeight) + "px";
-        infoBar.style.width = 50 + "%";
+        infoBar.style.width = 30 + "%";
         infoBar.style.height = 10 + "%";
         board.canvas.style.top = ((document.documentElement.clientHeight/2) - document.querySelector('#canvas-board').offsetHeight/2) + "px";
         frogboard.canvas.style.top = ((document.documentElement.clientHeight/2) - document.querySelector('#charcan').offsetHeight/2) + "px";
@@ -631,11 +630,12 @@ jsPsych.plugins['memory-map'] = (function(){
       infoBar.style.left = 0 + "px";
       infoBar.style.top = 5 + "px";
       infoBar.style.zIndex = "1";
-      var lvls = "LEVEL: ";
+      var lvls = "LEVEL: "+trial.exit_length+" ";
       for(let i = 1; i<6;i++){
         if(i <= trial.wins){lvls = lvls+="* ";}
-        else{lvls = lvls+="o ";}
+        else{lvls+="o ";}
       }
+      lvls += trial.exit_length+1; 
       levels.innerText = lvls;
       lives.innerText = "LIVES: "+trial.lives;
       /*

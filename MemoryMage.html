@@ -66,7 +66,10 @@
           jsPsych.addNodeToEndOfTimeline(tut1, function(){});
         }
         else{
-          jsPsych.addNodeToEndOfTimeline(tut2, function(){});
+          //jsPsych.addNodeToEndOfTimeline(tut2, function(){});
+          tutover = true;
+          consecutives = 0;
+          jsPsych.addNodeToEndOfTimeline(trial, function(){});
         }
       }
     };
