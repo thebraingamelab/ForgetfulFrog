@@ -139,7 +139,8 @@ jsPsych.plugins['memory-map'] = (function(){
       "map": trial.game_map,
       "startpos": null,
       "input_type": null,
-      "device": navigator.userAgent
+      "device": navigator.userAgent,
+      "solution": null
     }
   
     drawMap = function() {
@@ -225,6 +226,24 @@ jsPsych.plugins['memory-map'] = (function(){
       }
     }
 
+    dirCheckM2 = function(e){
+      trial_data.input_type = "touch";
+      if(typeof(e) === "undefined"){
+        e = window.event;
+      }
+      var touch = e.touches.item(0);
+      var touchx = touch.clientX;
+      var touchy = touch.clientY;
+      if(touchx > 0){
+        if(touchy > 0){}
+        else{}
+      }
+      else{
+        if(touchy<0){}
+        else{}
+      }
+    }
+
     //checks where tapped/swiped, then moves char as appropriate
     //non functional
     dirCheckM = function(e){
@@ -238,8 +257,10 @@ jsPsych.plugins['memory-map'] = (function(){
       var touchy = touch.clientY;
       var centerx = document.documentElement.clientWidth/2;
       var centery = document.documentElement.clientHeight/2;
-      var xmag = touchx - centerx;
-      var ymag = touchy - centery;
+      var xmag = (touchx - centerx)/document.documentElement.clientWidth;
+      var ymag = (touchy - centery)/document.documentElement.clientHeight;
+      console.log(xmag);
+      console.log(ymag);
       //x axis move
       if(Math.abs(xmag)>Math.abs(ymag)){
         if(xmag > 0){
@@ -430,10 +451,11 @@ jsPsych.plugins['memory-map'] = (function(){
 
     //generates an array to be mapped
     mapGen = function(){
-      //ORIENTATION DETECTION
-      //if(window.innerHeight > window.innerWidth){orientationFix()};
-      //level.map = boundedWalk(level.x,level.y,Math.floor((level.x * level.y)/2),trial.exit_length);
-      level.map = dfsGen(level.x,level.y,trial.exit_length);
+      //dfsGen returns a ~~tuple~~ array [map,solution]
+      var data = dfsGen(level.x,level.y,trial.exit_length);
+      level.map = data[0];
+      trial_data.solution = data[1];
+      console.log(data[1]);
       trial_data.map = level.map;
     }
 

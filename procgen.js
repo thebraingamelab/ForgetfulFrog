@@ -401,13 +401,13 @@ dfsGen = function(x,y,dist){
     while(bounds.includes(pos)){
         pos = getRandomInt(map.length);
     }
-    //console.log("start: "+pos);
     var start = pos;
     safetyLatch = 0;
     var nogo = [];
     var path = [];
     var posse = [];
     var possibles = [];
+    var sol = [];
     nogo.push(start);
     path.push(start);
     nogo.push(start);
@@ -415,13 +415,10 @@ dfsGen = function(x,y,dist){
     while(path.length-1 < dist){
         possibles = [];
         if(pos === undefined){
-            console.log("NaN Catch");
             var pos = 0;
-            //0 is assumed to be part of bounds as written
             while(bounds.includes(pos)){
                 pos = getRandomInt(map.length);
             }
-            //console.log("start: "+pos);
             start = pos;
             nogo = [];
             path = [];
@@ -431,11 +428,8 @@ dfsGen = function(x,y,dist){
             path.push(start);
             nogo.push(start);
         }
-        /*safetyLatch++;
-        if(safetyLatch > 15){
-            console.log("LOOPED TO HELL: "+ safetyLatch);
-            //return;
-        }*/
+        var dirs = ["D","U","R","L"];
+        var podirs = [];
         posse.push(pos + x);
         posse.push(pos - x);
         posse.push(pos + 1);
@@ -443,22 +437,19 @@ dfsGen = function(x,y,dist){
         for(let i = 0; i < posse.length; i++){
             if(!(bounds.includes(posse[i]) || nogo.includes(posse[i]) || path.includes(posse[i]))){
                 possibles.push(posse[i]);
+                podirs.push(dirs[i]);
             }
         }
         posse = [];
 
         if(possibles.length == 0){
             nogo.push(pos);
-            //console.log("NO OPTIONS, BACKTRACK: "+pos);
-            //ERROR CHECK FOR OCCASIONAL NaN
             if(pos === undefined){
-                //console.log("NaN Catch");
                 var pos = 0;
                 //0 is assumed to be part of bounds as written
                 while(bounds.includes(pos)){
                     pos = getRandomInt(map.length);
                 }
-                //console.log("start: "+pos);
                 start = pos;
                 nogo = [];
                 path = [];
@@ -469,10 +460,13 @@ dfsGen = function(x,y,dist){
                 nogo.push(start);
             }
             pos = path.pop();
+            sol.pop();
         }
         else{
-            pos = possibles[getRandomInt(possibles.length)];
+            randy = getRandomInt(possibles.length);
+            pos = possibles[randy];
             path.push(pos);
+            sol.push(podirs[randy]);
         }
         var temp = path.pop();
         var backtrack = path.pop();
@@ -482,6 +476,7 @@ dfsGen = function(x,y,dist){
             ||(path.includes(temp-1))){
                 nogo.push(temp);
                 path.push(backtrack);
+                sol.pop();
                 pos = backtrack;
                 //console.log("RETRACING, BACKTRACK: "+temp);
         }
@@ -496,7 +491,8 @@ dfsGen = function(x,y,dist){
     }
     map[start] = -1;
     map[path[dist]] = 2;
-    return map;
+    var data = [map,sol];
+    return data;
 }
 
 //calculates the bounds of a given array so wall tiles surround the field
