@@ -25,7 +25,7 @@
     var timeline = [];
     var lives = 10000;
     //init to -n where n is # of tutorial stages
-    var consecutives = -2;
+    var consecutives = -1;
     var timemax = 3.5;
     var timemin = 2.5;
     var tutover = false;
@@ -33,9 +33,12 @@
       type: "memory-map",
       exit_length: 4,
       lives: function(){return lives;},
-      wins: function(){return consecutives},
+      wins: function(){return consecutives-1},
       blackout_speed: function(){
         return ((Math.random() * (timemax - timemin))+timemin)*1000;
+      },
+      on_start: function(){
+        tutover = true;
       }
     };
     var tut1 = {
@@ -67,7 +70,6 @@
         }
         else{
           //jsPsych.addNodeToEndOfTimeline(tut2, function(){});
-          tutover = true;
           consecutives = 0;
           jsPsych.addNodeToEndOfTimeline(trial, function(){});
         }
@@ -108,8 +110,8 @@
     }
     function spikecheck(){
       var ts = jsPsych.data.get().last(1).filter({trial_type: 'memory-map'}).filter({success: true}).count();
-      if((ts == 1)&&(consecutives>=0)){
-        //console.log("win detected");
+      if((ts == 1)&&(consecutives>=0)&&tutover){
+        console.log("win detected");
         timemax = timemax - .5;
         timemin = timemin - .5;
         //CHANGE TIME VAR
@@ -131,16 +133,13 @@
       spikecheck();
       if((lives > 0)&&(tutover)){
         jsPsych.addNodeToEndOfTimeline(trial, function(){});
-        //console.log("TIME RANGE: "+timemin+" - "+timemax);
-        //console.log("NODE ADDED");
+        console.log("TIME RANGE: "+timemin+" - "+timemax);
       }
     }
     var instructions = {
       type: "html-button-response",
-      stimulus: "<p>You are a mage navigating the dungeon! " +
-      "Unfortunately for you, its dark and you can't see a thing. " +
-      "Using your light magic, you will be able to see a little bit of the level at the start.</p>" +
-      "<p>You can't move until you stop casting and can't see anymore, memorize the layout as best you can and reach the exit without hitting any walls!</p>" +
+      stimulus: "<p>You are a frog hopping across some lilypads! " +
+      "Unfortunately for you, you are so hungry for flies you forgot where the lilypads are. " +
       "</div>",
       choices: ["Start"],
       button_html: '<button class="jspsych-btn">%choice%</button>'

@@ -445,6 +445,7 @@ jsPsych.plugins['memory-map'] = (function(){
         document.onkeydown = null;
         document.ontouchstart = null;
         bo = false;
+        if(tutover){updateInfo();}
         //drawMap();
         frogbuffer.drawImage(check,0,0,ground.canvas.width,ground.canvas.height);
         frogboard.drawImage(frogbuffer.canvas, 0, 0, frogbuffer.canvas.width, frogbuffer.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
@@ -607,6 +608,17 @@ jsPsych.plugins['memory-map'] = (function(){
         return;
       }
     }
+
+    updateInfo = function(){
+      var lvls = "LEVEL: ";
+      lvls += trial.exit_length+" "
+      for(let i = 0; i<5;i++){
+        if(i <= trial.wins+1){lvls = lvls+="* ";}
+        else{lvls+="o ";}
+      }
+      lvls += trial.exit_length+1;
+      levels.innerText = lvls;
+    }
   
     beginGame = function(){
       //console.log("GAME START");
@@ -630,12 +642,18 @@ jsPsych.plugins['memory-map'] = (function(){
       infoBar.style.left = 0 + "px";
       infoBar.style.top = 5 + "px";
       infoBar.style.zIndex = "1";
-      var lvls = "LEVEL: "+trial.exit_length+" ";
-      for(let i = 1; i<6;i++){
-        if(i <= trial.wins){lvls = lvls+="* ";}
-        else{lvls+="o ";}
+      var lvls = "LEVEL: ";
+      if(trial.tutorial){
+        lvls += "TUTORIAL"
       }
-      lvls += trial.exit_length+1; 
+      else{
+        lvls += trial.exit_length+" "
+        for(let i = 0; i<5;i++){
+          if(i <= trial.wins){lvls = lvls+="* ";}
+          else{lvls+="o ";}
+        }
+        lvls += trial.exit_length+1;
+      } 
       levels.innerText = lvls;
       lives.innerText = "LIVES: "+trial.lives;
       /*
