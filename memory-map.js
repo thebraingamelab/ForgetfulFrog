@@ -142,7 +142,8 @@ jsPsych.plugins['memory-map'] = (function(){
       "input_type": null,
       "device": navigator.userAgent,
       "solution": null,
-      "ttp": [] //Time to press a key
+      "ttp": [], //Time to press a key
+      "waited": false //true if they waited for blackout, false if they didn't
     }
   
     drawMap = function() {
@@ -205,9 +206,9 @@ jsPsych.plugins['memory-map'] = (function(){
     }
 
     settime = function(){
-      var temptime = Date.now();
+      var temptime = performance.now();
       trial_data.ttp.push(temptime-time);
-      console.log(temptime-time);
+      //console.log(temptime-time);
       time = temptime;      
     }
 
@@ -231,6 +232,18 @@ jsPsych.plugins['memory-map'] = (function(){
           moveChar(4);
           break;
         case 39:
+          moveChar(6);
+          break;
+        case 87:
+          moveChar(8);
+          break;
+        case 83:
+          moveChar(2);
+          break;
+        case 65:
+          moveChar(4);
+          break;
+        case 68:
           moveChar(6);
           break;
       }
@@ -270,8 +283,8 @@ jsPsych.plugins['memory-map'] = (function(){
       var centery = document.documentElement.clientHeight/2;
       var xmag = (touchx - centerx)/document.documentElement.clientWidth;
       var ymag = (touchy - centery)/document.documentElement.clientHeight;
-      console.log(xmag);
-      console.log(ymag);
+      //console.log(xmag);
+      //console.log(ymag);
       //x axis move
       if(Math.abs(xmag)>Math.abs(ymag)){
         if(xmag > 0){
@@ -442,7 +455,7 @@ jsPsych.plugins['memory-map'] = (function(){
       document.ontouchstart = null;
       bo = false;
       dead = true;
-      console.log("REDRAW: DIE");
+      //console.log("REDRAW: DIE");
       wipers.style.opacity = 1;
       //drawMap();
       //192,64
@@ -466,7 +479,6 @@ jsPsych.plugins['memory-map'] = (function(){
       var data = dfsGen(level.x,level.y,trial.exit_length);
       level.map = data[0];
       trial_data.solution = data[1];
-      console.log(data[1]);
       trial_data.map = level.map;
     }
 
@@ -491,6 +503,8 @@ jsPsych.plugins['memory-map'] = (function(){
     win = function(){
       trial_data.map[trial_data.startpos] = -1;
       trial_data.success = true;
+      console.log(trial_data.waited);
+      console.log(trial_data.ttp);
       jsPsych.finishTrial(trial_data);
     }
 
@@ -499,7 +513,17 @@ jsPsych.plugins['memory-map'] = (function(){
       mapGen();
       resize();
       //console.log(level);
-      delay(level.learntime,blackout);
+      delay(level.learntime,blackoutrec);
+    }
+
+    blackoutrec = function(){
+      if(!trial.tutorial){
+        trial_data.waited = true;
+      }
+      else{
+        trial_data.waited = tutorial;
+      }
+      blackout();
     }
 
     blackout = function(){
@@ -563,8 +587,20 @@ jsPsych.plugins['memory-map'] = (function(){
         candiv.style.height = Math.floor(document.documentElement.clientHeight) + "px";
         infoBar.style.width = 40 + "%";
         infoBar.style.height = 10 + "%";
+        levels.width = infoBar.width;
+        levels.height = infoBar.height;
+        lives.width = infoBar.width;
+        lives.height = infoBar.height;
         board.canvas.style.top = ((document.documentElement.clientHeight/2) - document.querySelector('#canvas-board').offsetHeight/2) + "px";
         frogboard.canvas.style.top = ((document.documentElement.clientHeight/2) - document.querySelector('#charcan').offsetHeight/2) + "px";
+        if(window.innerWidth < 390){
+          lives.style.fontSize = "80%";
+          levels.style.fontSize = "80%";
+        }
+      }
+      if(window.innerWidth > 700){
+        lives.style.fontSize = "130%";
+        levels.style.fontSize = "130%";
       }
       if(((level.x > level.y)&&(window.innerHeight>window.innerWidth))||((level.y>level.x)&&(window.innerWidth>window.innerHeight))){
         if(window.innerHeight>window.innerWidth){}
@@ -572,7 +608,7 @@ jsPsych.plugins['memory-map'] = (function(){
         orientationFix();
         //console.log("fixed");
       }
-      console.log("REDRAW: RESIZE");
+      //console.log("REDRAW: RESIZE");
       redraw();
       //console.log(level);
     }
@@ -658,7 +694,7 @@ jsPsych.plugins['memory-map'] = (function(){
     }
   
     beginGame = function(){
-      time = Date.now();
+      time = performance.now();
       //console.log("GAME START");
       orientation = orientationCheck();
       //console.log("orientation: "+orientation);
@@ -706,7 +742,7 @@ jsPsych.plugins['memory-map'] = (function(){
       bo = false;
       document.onkeydown = dirCheckK;
       document.ontouchstart = dirCheckM;
-      delay(level.learntime,blackout);
+      delay(level.learntime,blackoutrec);
     }
   }
 
