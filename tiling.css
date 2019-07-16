@@ -65,6 +65,23 @@
     width: 50%;
     height: 10%;
     position: absolute;
+  }
+
+  #UI {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    z-index: 4;
+  }
+
+  #fullscreen{
+    width: 5%;
+    height: 5%;
+    top: 2%;
+    left: 45%;
+    position: relative;
     z-index: 4;
   }
 

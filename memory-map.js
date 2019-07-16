@@ -62,7 +62,7 @@ jsPsych.plugins['memory-map'] = (function(){
     var pad = document.createElement("canvas").getContext("2d");
     var frogbuffer = document.createElement("canvas").getContext("2d");
     if(document.querySelector("#canbg") == null){
-      display_element.innerHTML = "<div id='canbg' style='background-image: url(img/waterSeamlessLoop.gif);'><canvas id='canvas-board'></canvas><canvas id='charcan'></canvas></div><div id ='infoBar'><div id='infoBarImage'></div><span id='leveltxt'></span><span id='livestxt'></span></div>";
+      display_element.innerHTML = "<div id='canbg' style='background-image: url(img/waterSeamlessLoop.gif);'><canvas id='canvas-board'></canvas><canvas id='charcan'></canvas></div><div id='UI'><div id ='infoBar'><div id='infoBarImage'></div><span id='leveltxt'></span><span id='livestxt'></span></div><img id = fullscreen src='img/exitfullscreen.png'></div>";
     }
     var board = document.querySelector('#canvas-board').getContext("2d");
     var wipers = document.querySelector('#canvas-board');
@@ -70,6 +70,7 @@ jsPsych.plugins['memory-map'] = (function(){
     var candiv = document.querySelector("#canbg");
     var lives = document.querySelector("#livestxt");
     var levels = document.querySelector("#leveltxt");
+    var fullscreen = document.querySelector("#fullscreen");
 
     loadWaiter = function(){
       imgs++;
@@ -608,7 +609,6 @@ jsPsych.plugins['memory-map'] = (function(){
         orientationFix();
         //console.log("fixed");
       }
-      toggleFullScreen();
       //console.log("REDRAW: RESIZE");
       redraw();
       //console.log(level);
@@ -656,18 +656,19 @@ jsPsych.plugins['memory-map'] = (function(){
       beginGame();
     }
 
-    toggleFullScreen = function(){
+    toggleFullScreen = function(e){
+      e.stopPropagation();
       var doc = window.document;
       var docEl = doc.documentElement;
     
       var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
       var cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
-      console.log(window.mobileAndTabletcheck());
-      if(!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement && window.mobileAndTabletcheck()) {
+
+      if(!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
         requestFullScreen.call(docEl);
       }
       else {
-        //cancelFullScreen.call(doc);
+        cancelFullScreen.call(doc);
       }
     }
 
@@ -739,7 +740,6 @@ jsPsych.plugins['memory-map'] = (function(){
       }
       infoBar.style.left = 0 + "px";
       infoBar.style.top = 5 + "px";
-      infoBar.style.zIndex = "1";
       var lvls = "LEVEL: ";
       if(trial.tutorial){
         lvls += "TUTORIAL"
@@ -759,13 +759,19 @@ jsPsych.plugins['memory-map'] = (function(){
       board.drawImage(ground.canvas, 0, 0, ground.canvas.width, ground.canvas.height, 0, 0, board.canvas.width, board.canvas.height);*/
       //this calls resize everytime the window changes size
       window.addEventListener("resize", resize, {passive:true});
+      if(window.mobileAndTabletcheck()){
+        fullscreen.ontouchstart = toggleFullScreen;
+      }
+      else{
+        fullscreen.onclick = toggleFullScreen;
+      }
       //window.addEventListener("orientationchange", restart, {passive:true});
       
       //this sizes up the window properly the first time
       resize();
       bo = false;
       document.onkeydown = dirCheckK;
-      document.ontouchstart = dirCheckM;
+      document.body.ontouchstart = dirCheckM;
       delay(level.learntime,blackoutrec);
     }
   }
