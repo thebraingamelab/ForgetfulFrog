@@ -1,3 +1,6 @@
+
+@import url('https://fonts.googleapis.com/css?family=Overpass|Overpass+Mono&display=swap');
+
 * {
 
     box-sizing:border-box;
@@ -5,7 +8,7 @@
     padding:0;
   
   }
-  
+
   html {
   
     height:100%;
@@ -28,28 +31,22 @@
   #tutorial{
     opacity: 0;
     position: absolute;
-    width: 20%;
-    height: 70%;
+    width: 70%;
     top: 50px;
-    left: 5%;
+    left: 15%;
     z-index: 5;
   }
 
-  #tutbox h1{
-    font-size: 10vw;
-  }
-
   #tutbox p{
-    position: relative;
+    font-family: "Overpass";
     font-size: 3vw;
-    top: 10px
+    padding: 25px;
   }
 
   #tutbox{
     position: absolute;
     background-color: black;
     opacity: .5;
-    height: 100%;
     width: 100%;
     top: 0;
     left: 0;

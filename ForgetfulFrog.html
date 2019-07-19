@@ -27,8 +27,7 @@
     </div>
     <div id="tutorial">
       <div id='tutbox'>
-        <h1 id='tuthtxt'>Tutorial</h1>
-        <p id='tuttxt'>Welcome to Forgetful Frog! During the game, you will try and hop too the fly using either the arrow keys or mobile dpad display! The lilypads will disappear after a set amount of time, or as soon as you move. Get the first fly to start the game!</p>
+        <p id='tuttxt'>Hop to the fly using either the arrow keys or the arrows in the bottom right-hand corner!</p>
       </div>
     </div>
     <div id="game"></div>
@@ -38,7 +37,7 @@
     var timeline = [];
     var lives = 10000;
     //init to -n where n is # of tutorial stages
-    var consecutives = -1;
+    var consecutives = -2;
     var fails = 0;
     var timemax = 3.5;
     var timemin = 2.5;
@@ -77,36 +76,35 @@
           jsPsych.addNodeToEndOfTimeline(tut1, function(){});
         }
         else{
-          //jsPsych.addNodeToEndOfTimeline(tut2, function(){});
-          consecutives = 0;
-          jsPsych.addNodeToEndOfTimeline(trial, function(){});
+          document.getElementById("tuttxt").innerHTML = "The lilypads will disappear after you hop or wait too long, remember the path!"
+          jsPsych.addNodeToEndOfTimeline(tut2, function(){});
         }
       }
     };
     var tut2 = {
       type: "memory-map",
-      game_map: [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-                 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-                 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-                 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-                 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-                 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-                 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-                 1,1,1,1,1,1,0,0,0,0,2,1,1,1,1,1,
-                 1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,
-                 1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,
-                 1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,
-                 1,1,1,1,1,1,1,1,-1,1,1,1,1,1,1,1,
-                 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-                 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-                 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-                 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,],
+      game_map: [1,1,1,1,1,1,1,1,1,
+                 1,1,1,1,1,1,1,1,1,
+                 1,1,1,1,1,1,1,1,1,
+                 1,1,1,1,1,1,1,1,1,
+                 1,1,1,1,0,0,2,1,1,
+                 1,1,1,1,0,1,1,1,1,
+                 1,1,1,1,-1,1,1,1,1,
+                 1,1,1,1,1,1,1,1,1,
+                 1,1,1,1,1,1,1,1,1,],
       tutorial: false,
       lives: function(){return lives;},
       wins: function(){return consecutives},
       on_finish: function(){
-        tutover = true;
-        consecutives = 0;
+        var ts = jsPsych.data.get().last(1).filter({trial_type: 'memory-map'}).filter({success: false}).count();
+        if(ts == 1){
+          jsPsych.addNodeToEndOfTimeline(tut2, function(){});
+        }
+        else{
+          fails = 0;
+          consecutives = 0;
+          jsPsych.addNodeToEndOfTimeline(trial, function(){});
+        }
       }
     };
     function failcheck(){
