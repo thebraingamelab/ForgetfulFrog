@@ -14,13 +14,13 @@ jsPsych.plugins['memory-map'] = (function(){
       row_length:{
         type: jsPsych.plugins.parameterType.INT,
         pretty_name: "Row length",
-        default: 16,
+        default: 9,
         description: "The amount of elements in a row of the map"
       },
       column_height:{
         type: jsPsych.plugins.parameterType.INT,
         pretty_name: "Column height",
-        default: 16,
+        default: 9,
         description: "The amount of elements in a column of the map"
       },
       blackout_speed:{
@@ -57,12 +57,15 @@ jsPsych.plugins['memory-map'] = (function(){
   }
 
   plugin.trial = function(display_element,trial){
+    var dom_target = jsPsych.getDisplayElement();
+    dom_target.style.height = '100%';
+
     //creating canvases that buffer paintings, like layers in photoshop
     var ground = document.createElement("canvas").getContext("2d");
     var pad = document.createElement("canvas").getContext("2d");
     var frogbuffer = document.createElement("canvas").getContext("2d");
     if(document.querySelector("#canbg") == null){
-      display_element.innerHTML = "<div id='canbg' style='background-image: url(img/waterSeamlessLoop.gif);'><canvas id='canvas-board'></canvas><canvas id='charcan'></canvas></div><div id='UI'><div id ='infoBar'><div id='infoBarImage'></div><span id='leveltxt'></span><span id='livestxt'></span></div><img id = fullscreen src='img/exitfullscreen.png'><div id='controlpad'><div id='up'></div><div id='down'></div><div id='left'></div><div id='right'></div><img id = dpad src='img/dpad.png'></div></div>";
+      display_element.innerHTML = "<div id='canbg' style='background-image: url(img/waterSeamlessLoop.gif);'><canvas id='canvas-board'></canvas><canvas id='charcan'></canvas></div><div id='UI'><div id ='infoBar'><div id='infoBarImage'></div><span id='leveltxt'></span><span id='livestxt'></span></div><div id='controlpad'><div id='up'></div><div id='down'></div><div id='left'></div><div id='right'></div><img id = dpad src='img/dpad.png'></div></div>";
     }
     var board = document.querySelector('#canvas-board').getContext("2d");
     var wipers = document.querySelector('#canvas-board');
@@ -70,11 +73,12 @@ jsPsych.plugins['memory-map'] = (function(){
     var candiv = document.querySelector("#canbg");
     var lives = document.querySelector("#livestxt");
     var levels = document.querySelector("#leveltxt");
-    var fullscreen = document.querySelector("#fullscreen");
+    var fullscreen = document.getElementById("fullscreenh");
     var upkey = document.querySelector("#up");
     var downkey = document.querySelector("#down");
     var leftkey = document.querySelector("#left");
     var rightkey = document.querySelector("#right");
+    var tutorial = document.getElementById("tutorial");
 
     loadWaiter = function(){
       imgs++;
@@ -351,7 +355,8 @@ jsPsych.plugins['memory-map'] = (function(){
     var totshift = 0;
     animateHop = function(timestamp,int){
       //console.log("WIDTH: "+board.canvas.width+"\n HEIGHT: "+board.canvas.height);
-      document.ontouchstart = null;
+      //document.ontouchstart = null;
+      dPadActive(false);
       document.onkeydown = null;
       var padcheck = false;
       if(!trial.tutorial){/*
@@ -600,39 +605,47 @@ jsPsych.plugins['memory-map'] = (function(){
         board.canvas.style.top = "0px";
         frogboard.canvas.style.top = "0px";
         //board.canvas.height = Math.floor(board.canvas.width * 0.5625);
-        board.canvas.width = Math.floor(document.documentElement.clientWidth * ratio);
-        board.canvas.height = Math.floor(document.documentElement.clientHeight);
-        frogboard.canvas.width = Math.floor(document.documentElement.clientWidth * ratio);
-        frogboard.canvas.height = Math.floor(document.documentElement.clientHeight);
-        candiv.style.width = Math.floor(document.documentElement.clientWidth) + "px";
-        candiv.style.height = Math.floor(document.documentElement.clientHeight) + "px";
-        infoBar.style.width = 30 + "%";
-        infoBar.style.height = 15 + "%";
+        board.canvas.width = Math.floor(display_element.clientHeight);
+        board.canvas.height = Math.floor(display_element.clientHeight);
+        frogboard.canvas.width = Math.floor(display_element.clientHeight);
+        frogboard.canvas.height = Math.floor(display_element.clientHeight);
+        candiv.style.width = Math.floor(display_element.clientWidth) + "px";
+        candiv.style.height = Math.floor(display_element.clientHeight) + "px";
+        infoBar.style.width = "30%";
+        infoBar.style.height = "15%";
+        tutorial.style.width = "20%"
+        tutorial.style.height = "70%"
+        document.getElementById('tuthtxt').style.fontSize = "7vh"
+        document.getElementById('tuttxt').style.fontSize = "3vh"
         levels.width = infoBar.width;
         levels.height = infoBar.height;
         lives.width = infoBar.width;
         lives.height = infoBar.height;
-        board.canvas.style.left = ((document.documentElement.clientWidth/2) - document.querySelector('#canvas-board').offsetWidth/2) + "px";
-        frogboard.canvas.style.left = ((document.documentElement.clientWidth/2) - document.querySelector('#charcan').offsetWidth/2) + "px";
+        board.canvas.style.left = ((display_element.clientWidth/2) - document.querySelector('#canvas-board').offsetWidth/2) + "px";
+        frogboard.canvas.style.left = ((display_element.clientWidth/2) - document.querySelector('#charcan').offsetWidth/2) + "px";
       }
       else{
         ratio = window.innerWidth/window.innerHeight;
         board.canvas.style.left = "0px";
         frogboard.canvas.style.left = "0px";
-        board.canvas.width = Math.floor(document.documentElement.clientWidth);
-        board.canvas.height = Math.floor(document.documentElement.clientHeight * ratio);
-        frogboard.canvas.width = Math.floor(document.documentElement.clientWidth);
-        frogboard.canvas.height = Math.floor(document.documentElement.clientHeight * ratio);
-        candiv.style.width = Math.floor(document.documentElement.clientWidth) + "px";
-        candiv.style.height = Math.floor(document.documentElement.clientHeight) + "px";
-        infoBar.style.width = 40 + "%";
-        infoBar.style.height = 10 + "%";
+        board.canvas.width = Math.floor(display_element.clientWidth);
+        board.canvas.height = Math.floor(display_element.clientWidth);
+        frogboard.canvas.width = Math.floor(display_element.clientWidth);
+        frogboard.canvas.height = Math.floor(display_element.clientWidth);
+        candiv.style.width = Math.floor(display_element.clientWidth) + "px";
+        candiv.style.height = Math.floor(display_element.clientHeight) + "px";
+        infoBar.style.width = "40%";
+        infoBar.style.height = "10%";
+        tutorial.style.width = "90%";
+        tutorial.style.height = "20%";
+        document.getElementById('tuthtxt').style.fontSize = "7vw"
+        document.getElementById('tuttxt').style.fontSize = "3vw"
         levels.width = infoBar.width;
         levels.height = infoBar.height;
         lives.width = infoBar.width;
         lives.height = infoBar.height;
-        board.canvas.style.top = ((document.documentElement.clientHeight/2) - document.querySelector('#canvas-board').offsetHeight/2) + "px";
-        frogboard.canvas.style.top = ((document.documentElement.clientHeight/2) - document.querySelector('#charcan').offsetHeight/2) + "px";
+        board.canvas.style.top = ((display_element.clientHeight/2) - document.querySelector('#canvas-board').offsetHeight/2) + "px";
+        frogboard.canvas.style.top = ((display_element.clientHeight/2) - document.querySelector('#charcan').offsetHeight/2) + "px";
         if(window.innerWidth < 390){
           lives.style.fontSize = "80%";
           levels.style.fontSize = "80%";
@@ -792,6 +805,14 @@ jsPsych.plugins['memory-map'] = (function(){
       } 
       levels.innerText = lvls;
       lives.innerText = "LIVES: "+trial.lives;
+      if(!tutover){
+        tutorial.style.opacity = 1;
+        document.getElementById("infoBar").style.opacity = 0;
+      }
+      else{        
+        tutorial.style.opacity = 0;
+        document.getElementById("infoBar").style.opacity = 1;
+      }
       /*
       ground.drawImage(infoBar,0,0,200,100);
       board.drawImage(ground.canvas, 0, 0, ground.canvas.width, ground.canvas.height, 0, 0, board.canvas.width, board.canvas.height);*/
@@ -802,6 +823,8 @@ jsPsych.plugins['memory-map'] = (function(){
       }
       else{
         fullscreen.onclick = toggleFullScreen;
+        document.querySelector("#dpad").style.opacity = 0;
+        dPadActive(false);
       }
       //window.addEventListener("orientationchange", restart, {passive:true});
       

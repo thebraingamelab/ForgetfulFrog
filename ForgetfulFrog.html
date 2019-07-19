@@ -11,6 +11,8 @@
     <script src="lib/jspsych-6.0.5/plugins/jspsych-html-button-response.js"></script>
     <!--<link href="../jspsych-6.0.5/css/jspsych.css" rel="stylesheet" type="text/css"></link>-->
     <link href = "tiling.css" rel = "stylesheet" type = "text/css">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
   </head>
 
@@ -18,14 +20,26 @@
     
     <script src = "procgen.js" type = "text/javascript"></script>
     <script src="memory-map.js"></script>
+    <div id="buttonbar">
+      <img id="fullscreenh" src='img/exitfullscreen.png'>
+      <img id="sound" src='img/volumeon.svg'>
+      <img id="profile">
+    </div>
+    <div id="tutorial">
+      <div id='tutbox'>
+        <h1 id='tuthtxt'>Tutorial</h1>
+        <p id='tuttxt'>Welcome to Forgetful Frog! During the game, you will try and hop too the fly using either the arrow keys or mobile dpad display! The lilypads will disappear after a set amount of time, or as soon as you move. Get the first fly to start the game!</p>
+      </div>
+    </div>
+    <div id="game"></div>
   
   </body>
   <script>
-    //https://stackoverflow.com/questions/48234696/how-to-put-a-gif-with-canvas/48297226
     var timeline = [];
     var lives = 10000;
     //init to -n where n is # of tutorial stages
     var consecutives = -1;
+    var fails = 0;
     var timemax = 3.5;
     var timemin = 2.5;
     var tutover = false;
@@ -43,24 +57,18 @@
     };
     var tut1 = {
       type: "memory-map",
-      game_map: [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-                 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-                 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-                 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-                 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-                 1,1,1,1,1,1,0,0,2,1,1,1,1,1,1,1,
-                 1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,
-                 1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,
-                 1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,
-                 1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,
-                 1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,
-                 1,1,1,1,1,1,1,1,-1,1,1,1,1,1,1,1,
-                 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-                 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-                 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-                 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,],
+      game_map: [1,1,1,1,1,1,1,1,1,
+                 1,1,1,1,1,1,1,1,1,
+                 1,1,1,0,2,1,1,1,1,
+                 1,1,1,0,1,1,1,1,1,
+                 1,1,1,0,0,1,1,1,1,
+                 1,1,1,1,0,1,1,1,1,
+                 1,1,1,1,-1,1,1,1,1,
+                 1,1,1,1,1,1,1,1,1,
+                 1,1,1,1,1,1,1,1,1,],
       tutorial: true,
-      column_height: 16,
+      row_length: 9,
+      column_height: 9,
       lives: function(){return lives;},
       wins: function(){return consecutives},
       on_finish: function(){
@@ -103,8 +111,18 @@
     };
     function failcheck(){
       var ts = jsPsych.data.get().last(1).filter({trial_type: 'memory-map'}).filter({success: false}).count();
-      if(ts == 1){
+      if((ts == 1)&&tutover){
         lives--;
+        fails++;
+        if(fails >= 3){
+          timemax = 3.5;
+          timemin = 2.5;
+          consecutives = 0;
+          if(trial.exit_length>1){
+            trial.exit_length = trial.exit_length - 1;
+          }
+          fails = 0;
+        }
         //console.log("loss detected, lives: "+lives);
       }
     }
@@ -121,6 +139,7 @@
       }
       if(consecutives >= 5){
         consecutives = 0;
+        fails = 0;
         trial.exit_length = trial.exit_length + 1;
         //must be set .5 higher since .5 subtracted after
         timemax = 3.5;
@@ -144,12 +163,13 @@
       choices: ["Start"],
       button_html: '<button class="jspsych-btn">%choice%</button>'
     };
-    timeline.push(instructions);
+    //timeline.push(instructions);
     timeline.push(tut1);
     //timeline.push(trial);
     //begin
   jsPsych.init({
   timeline: timeline,
+  display_element: 'game',
       on_trial_finish: function(){
         postMap();
       },
