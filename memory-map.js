@@ -119,8 +119,6 @@ jsPsych.plugins['memory-map'] = (function(){
     fly.onload = loadWaiter;
     fly.src = "img/flypad.png";
     const infoBar = document.getElementById("infoBar");
-
-    //console.log("TIME: "+trial.blackout_speed);
   
     //map data
     var level = {
@@ -217,7 +215,6 @@ jsPsych.plugins['memory-map'] = (function(){
     settime = function(){
       var temptime = performance.now();
       trial_data.ttp.push(temptime-time);
-      //console.log(temptime-time);
       time = temptime;      
     }
 
@@ -292,8 +289,6 @@ jsPsych.plugins['memory-map'] = (function(){
       var centery = document.documentElement.clientHeight/2;
       var xmag = (touchx - centerx)/document.documentElement.clientWidth;
       var ymag = (touchy - centery)/document.documentElement.clientHeight;
-      //console.log(xmag);
-      //console.log(ymag);
       //x axis move
       if(Math.abs(xmag)>Math.abs(ymag)){
         if(xmag > 0){
@@ -319,13 +314,19 @@ jsPsych.plugins['memory-map'] = (function(){
 
     //returns the tilecode at the input x&y coordinates
     collider = function(ix, iy){
-      //console.log(ix+((iy-1)*level.x));
       return level.map[ix+((iy-1)*level.x)];
     }
 
 
     //moves that character in the passed direction
     moveChar = function(dir){
+      if(!hop.paused){
+        hop.currentTime = 0;
+        hop.play();
+      }
+      else{
+        hop.play();
+      }
       wipeWaiters();
       blackout();
       switch(dir){
@@ -354,14 +355,11 @@ jsPsych.plugins['memory-map'] = (function(){
 
     var totshift = 0;
     animateHop = function(timestamp,int){
-      //console.log("WIDTH: "+board.canvas.width+"\n HEIGHT: "+board.canvas.height);
       //document.ontouchstart = null;
       dPadActive(false);
       document.onkeydown = null;
       var padcheck = false;
-      if(!trial.tutorial){/*
-      board.clearRect(0,0,board.canvas.width,board.canvas.height);
-      ground.clearRect(0,0,ground.canvas.width,ground.canvas.height);*/
+      if(!trial.tutorial){
       wipers.style.opacity = 0;
       }
       frogbuffer.clearRect(0,0,frogbuffer.canvas.width,frogbuffer.canvas.height);
@@ -402,14 +400,12 @@ jsPsych.plugins['memory-map'] = (function(){
       if(padcheck && !trial.tutorial){
         pad.clearRect(0,0,pad.canvas.width,pad.canvas.height);
         pad.drawImage(lilypad, char.tx*level.scale, (char.ty-1)*level.scale, level.scale, level.scale);
-        //console.log("TX: "+char.tx*level.scale+"\nTY: "+(char.ty-1)*level.scale)
         pad.globalAlpha = totshift/level.scale;
         frogboard.drawImage(pad.canvas, 0, 0, pad.canvas.width, pad.canvas.height, 0, 0, frogboard.canvas.width, frogboard.canvas.height);
         pad.clearRect(0,0,pad.canvas.width,pad.canvas.height);
       }
       frogbuffer.drawImage(frog,charx,chary,level.scale,level.scale);
       frogboard.drawImage(frogbuffer.canvas, 0, 0, frogbuffer.canvas.width, frogbuffer.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
-      //board.drawImage(ground.canvas, 0, 0, ground.canvas.width, ground.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
       if(totshift<level.scale){
         switch(int){
           case 1:
@@ -430,18 +426,11 @@ jsPsych.plugins['memory-map'] = (function(){
         start = null;
         totshift = 0;
         document.onkeydown = dirCheckK;
-        //document.ontouchstart = dirCheckM;
         dPadActive(true);
         if(level.walkable.includes(collider(char.tx,char.ty))){
-          /*if(!trial.tutorial){
-            console.log("REDRAW: ANIMATEhop");
-            redraw();
-          }*/
           wincheck();
         }
-        else{/*
-          board.clearRect(0,0,board.canvas.width,board.canvas.height);
-          ground.clearRect(0,0,ground.canvas.width,ground.canvas.height);*/
+        else{
           die();
         }
       }
@@ -461,19 +450,15 @@ jsPsych.plugins['memory-map'] = (function(){
       animateHop(Date.now(),4);
     }
     moveU = function(){
-      console.log("UP");
       moveChar(8);
     }
     moveD = function(){
-      console.log("DOWN");
       moveChar(2);
     }
     moveL = function(){
-      console.log("LEFT");
       moveChar(4);
     }
     moveR = function(){
-      console.log("RIGHT");
       moveChar(6);
     }
 
@@ -498,12 +483,10 @@ jsPsych.plugins['memory-map'] = (function(){
       dPadActive(false);
       bo = false;
       dead = true;
-      //console.log("REDRAW: DIE");
       wipers.style.opacity = 1;
-      //drawMap();
-      //192,64
       frogbuffer.clearRect(0,0,frogbuffer.canvas.width,frogbuffer.canvas.height);
       frogboard.clearRect(0,0,frogboard.canvas.width,frogboard.canvas.height);
+      splash.play();
       ground.drawImage(cross, charx,chary, level.scale, level.scale);
       board.drawImage(ground.canvas, 0, 0, ground.canvas.width, ground.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
       bo = false;
@@ -534,10 +517,9 @@ jsPsych.plugins['memory-map'] = (function(){
         dPadActive(false);
         bo = false;
         if(tutover){updateInfo();}
-        //drawMap();
         frogbuffer.drawImage(check,0,0,ground.canvas.width,ground.canvas.height);
         frogboard.drawImage(frogbuffer.canvas, 0, 0, frogbuffer.canvas.width, frogbuffer.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
-        //console.log(check);
+        ding.play();
         bo = false;
         delay(500,win);
       }
@@ -546,8 +528,6 @@ jsPsych.plugins['memory-map'] = (function(){
     win = function(){
       trial_data.map[trial_data.startpos] = -1;
       trial_data.success = true;
-      console.log(trial_data.waited);
-      console.log(trial_data.ttp);
       jsPsych.finishTrial(trial_data);
     }
 
@@ -555,7 +535,6 @@ jsPsych.plugins['memory-map'] = (function(){
       bo = false;
       mapGen();
       resize();
-      //console.log(level);
       delay(level.learntime,blackoutrec);
     }
 
@@ -604,17 +583,14 @@ jsPsych.plugins['memory-map'] = (function(){
         ratio = window.innerHeight/window.innerWidth;
         board.canvas.style.top = "0px";
         frogboard.canvas.style.top = "0px";
-        //board.canvas.height = Math.floor(board.canvas.width * 0.5625);
-        board.canvas.width = Math.floor(display_element.clientHeight);
-        board.canvas.height = Math.floor(display_element.clientHeight);
         frogboard.canvas.width = Math.floor(display_element.clientHeight);
         frogboard.canvas.height = Math.floor(display_element.clientHeight);
+        board.canvas.width = frogboard.canvas.width;
+        board.canvas.height = frogboard.canvas.height;
         candiv.style.width = Math.floor(display_element.clientWidth) + "px";
         candiv.style.height = Math.floor(display_element.clientHeight) + "px";
         infoBar.style.width = "30%";
         infoBar.style.height = "15%";
-        //tutorial.style.width = "20%"
-        //tutorial.style.height = "70%"
         levels.width = infoBar.width;
         levels.height = infoBar.height;
         lives.width = infoBar.width;
@@ -626,10 +602,10 @@ jsPsych.plugins['memory-map'] = (function(){
         ratio = window.innerWidth/window.innerHeight;
         board.canvas.style.left = "0px";
         frogboard.canvas.style.left = "0px";
-        board.canvas.width = Math.floor(display_element.clientWidth);
-        board.canvas.height = Math.floor(display_element.clientWidth);
         frogboard.canvas.width = Math.floor(display_element.clientWidth);
         frogboard.canvas.height = Math.floor(display_element.clientWidth);
+        board.canvas.width = frogboard.canvas.width;
+        board.canvas.height = frogboard.canvas.height;
         candiv.style.width = Math.floor(display_element.clientWidth) + "px";
         candiv.style.height = Math.floor(display_element.clientHeight) + "px";
         infoBar.style.width = "40%";
@@ -641,7 +617,7 @@ jsPsych.plugins['memory-map'] = (function(){
         lives.width = infoBar.width;
         lives.height = infoBar.height;
         board.canvas.style.top = ((display_element.clientHeight/2) - document.querySelector('#canvas-board').offsetHeight/2) + "px";
-        frogboard.canvas.style.top = ((display_element.clientHeight/2) - document.querySelector('#charcan').offsetHeight/2) + "px";
+        frogboard.canvas.style.top = board.canvas.style.top;
         if(window.innerWidth < 390){
           lives.style.fontSize = "80%";
           levels.style.fontSize = "80%";
@@ -655,11 +631,8 @@ jsPsych.plugins['memory-map'] = (function(){
         if(window.innerHeight>window.innerWidth){}
         if(window.innerHeight<window.innerWidth){}
         orientationFix();
-        //console.log("fixed");
       }
-      //console.log("REDRAW: RESIZE");
       redraw();
-      //console.log(level);
     }
 
 
@@ -764,12 +737,44 @@ jsPsych.plugins['memory-map'] = (function(){
       lvls += trial.exit_length+1;
       levels.innerText = lvls;
     }
+
+    var bgm;
+    var hop;
+    var ding;
+    var splash;
+    initSounds = function(){
+      hop = document.createElement("AUDIO");
+      hop.src = "audio/hop.wav";
+      ding = document.createElement("AUDIO");
+      ding.src = "audio/ding.wav";
+      splash = document.createElement("AUDIO");
+      splash.src = "audio/splash.wav"
+    }
+
+    toggleSounds = function(){
+      if(hop.volume == 1.0){
+        hop.volume = 0.0;
+      }
+      else{
+        hop.volume = 1.0;
+      }
+      if(ding.volume == 1.0){
+        ding.volume = 0.0;       
+      }
+      else{
+        ding.volume = 1.0;
+      }
+      if(splash.volume == 1.0){
+        splash.volume = 0.0;       
+      }
+      else{
+        splash.volume = 1.0;
+      }
+    }
   
     beginGame = function(){
       time = performance.now();
-      //console.log("GAME START");
       orientation = orientationCheck();
-      //console.log("orientation: "+orientation);
       //canvas = size * dimension of array
       ground.canvas.width = level.x * level.scale;
       ground.canvas.height = level.y * level.scale;
@@ -809,9 +814,6 @@ jsPsych.plugins['memory-map'] = (function(){
         tutorial.style.opacity = 0;
         document.getElementById("infoBar").style.opacity = 1;
       }
-      /*
-      ground.drawImage(infoBar,0,0,200,100);
-      board.drawImage(ground.canvas, 0, 0, ground.canvas.width, ground.canvas.height, 0, 0, board.canvas.width, board.canvas.height);*/
       //this calls resize everytime the window changes size
       window.addEventListener("resize", resize, {passive:true});
       if(window.mobileAndTabletcheck()){
@@ -822,6 +824,7 @@ jsPsych.plugins['memory-map'] = (function(){
         document.querySelector("#dpad").style.opacity = 0;
         dPadActive(false);
       }
+      initSounds();
       //window.addEventListener("orientationchange", restart, {passive:true});
       
       //this sizes up the window properly the first time
