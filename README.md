@@ -14,11 +14,11 @@ cognitive science principles such as sequential memory and partial report and co
 
 >Placeholder Graphics from google images
 
+>Lives and Level Display Graphic
+
+>Copyright-Free Sound Design
+
+>Direct Path Generator
+
 ## Features to Implement
 >Graphical Overhaul
-
->Sound Design
-
->Smarter/Specified Map Generation
-
->Lives and Level Display Graphic
