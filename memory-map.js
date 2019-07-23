@@ -49,9 +49,15 @@ jsPsych.plugins['memory-map'] = (function(){
       },
       wins:{
         type: jsPsych.plugins.parameterType.INT,
-        pretty_name: 'Score',
+        pretty_name: 'Wins',
         default: undefined,
         description: "the number of wins the player has"
+      },
+      score:{
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Score',
+        default: 0,
+        description: "The number of points the player has"
       }
     }
   }
@@ -738,7 +744,7 @@ jsPsych.plugins['memory-map'] = (function(){
       levels.innerText = lvls;
     }
 
-    var bgm;
+    var bgm = document.getElementById('bgm');
     var hop;
     var ding;
     var splash;
@@ -770,7 +776,16 @@ jsPsych.plugins['memory-map'] = (function(){
       else{
         splash.volume = 1.0;
       }
+      if(!bgm.paused){
+        bgm.pause();
+      }
+      else{
+        bgm.currentTime = 0;
+        bgm.play();
+      }
     }
+
+    document.getElementById("sound").onclick = toggleSounds;
   
     beginGame = function(){
       time = performance.now();
@@ -804,8 +819,9 @@ jsPsych.plugins['memory-map'] = (function(){
         }
         lvls += trial.exit_length+1;
       } 
+      //SCORE TEXT LIVES TEXT
       levels.innerText = lvls;
-      lives.innerText = "LIVES: "+trial.lives;
+      lives.innerText = "SCORE: "+trial.score;//"LIVES: "+trial.lives;
       if(!tutover){
         tutorial.style.opacity = 1;
         document.getElementById("infoBar").style.opacity = 0;

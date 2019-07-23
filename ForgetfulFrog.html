@@ -21,9 +21,10 @@
     <script src = "procgen.js" type = "text/javascript"></script>
     <script src="memory-map.js"></script>
     <div id="buttonbar">
-      <button onclick="startBGM"></button>
+      <button id='bgmhideaway' onclick="startBGM"></button>
       <img id="fullscreenh" src='img/exitfullscreen.png'>
-      <img id="sound" src='img/volumeon.svg' onclick="toggleBGM()">
+      <img id="sound" src='img/volumeon.svg'>
+      <img id="music" src='img/musicon.png' onclick="toggleBGM()">
       <img id="profile">
     </div>
     <div id="tutorial">
@@ -43,8 +44,11 @@
     var timemax = 3.5;
     var timemin = 2.5;
     var tutover = false;
+    var score = 0;
+    var goal = 500;
 
     var bgm = new Audio("audio/bga2.wav");
+    bgm.id = 'bgm';
     bgm.autoplay = true;
     bgm.loop = true;
     bgm.volume = 0.7;
@@ -68,7 +72,8 @@
       type: "memory-map",
       exit_length: 4,
       lives: function(){return lives;},
-      wins: function(){return consecutives-1},
+      wins: function(){return consecutives-1;},
+      score: function(){return score;},
       blackout_speed: function(){
         return ((Math.random() * (timemax - timemin))+timemin)*1000;
       },
@@ -143,6 +148,7 @@
           }
           fails = 0;
         }
+        score = score-(fails*5+5);
       }
     }
     function spikecheck(){
@@ -151,6 +157,7 @@
         timemax = timemax - .5;
         timemin = timemin - .5;
         consecutives++;
+        score = score+(consecutives*5+5);
       }
       if(consecutives >= 5){
         consecutives = 0;
@@ -164,8 +171,13 @@
     function postMap(){
       failcheck();
       spikecheck();
-      if((lives > 0)&&(tutover)){
+      if((score < goal)&&(tutover)){
         jsPsych.addNodeToEndOfTimeline(trial, function(){});
+      }
+      else{
+        if(tutover){
+
+        }
       }
     }
     var instructions = {
