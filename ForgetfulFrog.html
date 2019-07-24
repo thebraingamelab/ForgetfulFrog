@@ -25,13 +25,14 @@
       <img id="fullscreenh" src='img/exitfullscreen.png'>
       <img id="sound" src='img/volumeon.svg'>
       <img id="music" src='img/musicon.png' onclick="toggleBGM()">
-      <img id="profile">
+      <img id="profile" src='img/levelCircle.png'>
     </div>
     <div id="tutorial">
       <div id='tutbox'>
         <p id='tuttxt'>Hop to the fly using either the arrow keys or the arrows in the bottom right-hand corner!</p>
       </div>
     </div>
+    <div id='circlewrap'><img id='levelCircle' src='img/levelCircleF.png'><div id='lvltxtC'>Level<br>6</div></div>
     <div id="game"></div>
   
   </body>
@@ -145,12 +146,19 @@
           consecutives = 0;
           if(trial.exit_length>1){
             trial.exit_length = trial.exit_length - 1;
+            document.getElementById("lvltxtC").innerHTML = "Level<br>"+trial.exit_length;
+            document.getElementById("lvltxtC").style.color = "red";
+            document.getElementById('circlewrap').style.opacity = 0;
+            window.requestAnimationFrame(fadeInCircle);
           }
           fails = 0;
         }
-        score = score-(fails*5+5);
+        if(score>0){
+          score = score-(fails*5+5);
+        }
       }
     }
+
     function spikecheck(){
       var ts = jsPsych.data.get().last(1).filter({trial_type: 'memory-map'}).filter({success: true}).count();
       if((ts == 1)&&(consecutives>=0)&&tutover){
@@ -166,8 +174,56 @@
         //must be set .5 higher since .5 subtracted after
         timemax = 3.5;
         timemin = 2.5;
+        document.getElementById("lvltxtC").innerHTML = "Level<br>"+trial.exit_length;
+        document.getElementById("lvltxtC").style.color = "green";
+        document.getElementById('circlewrap').style.opacity = 0;
+        window.requestAnimationFrame(fadeInCircle);
       }
     }
+
+    var faded = false;
+    fadeInCircle = function(){
+      console.log("in")
+      var cw = document.getElementById('circlewrap');
+      console.log(cw.style.opacity);
+      cw.style.opacity = parseFloat(cw.style.opacity) + .04;
+      console.log(cw.style.opacity);
+      if(cw.style.opacity < 1){
+        window.requestAnimationFrame(fadeInCircle);
+      }
+      else{
+        window.requestAnimationFrame(fadeOutCircle);
+      }
+    }
+    fadeOutCircle = function(){
+      console.log('out');
+      var cw = document.getElementById('circlewrap');
+      cw.style.opacity = parseFloat(cw.style.opacity) - .04;
+      if(cw.style.opacity > 0){
+        window.requestAnimationFrame(fadeOutCircle);
+      }
+    }
+
+    var start = null;
+    delay = function(int,func){
+      if(start == null){
+        start = Date.now();
+      }
+      var progress = Date.now() - start;
+      if(progress < int){
+        //anon func t prevent glob
+        id = requestAnimationFrame(function(timestamp){
+          delay(int,func);
+        });
+        RAFid.push(id);
+      }
+      else{
+        start = null;
+        func();
+        return;
+      }
+    }
+
     function postMap(){
       failcheck();
       spikecheck();
@@ -176,21 +232,12 @@
       }
       else{
         if(tutover){
-
+          //Allow continue?
         }
       }
     }
-    var instructions = {
-      type: "html-button-response",
-      stimulus: "<p>You are a frog hopping across some lilypads! " +
-      "Unfortunately for you, you are so hungry for flies you forgot where the lilypads are. " +
-      "</div>",
-      choices: ["Start"],
-      button_html: '<button class="jspsych-btn">%choice%</button>'
-    };
-    //timeline.push(instructions);
+
     timeline.push(tut1);
-    //timeline.push(trial);
     //begin
   jsPsych.init({
   timeline: timeline,
