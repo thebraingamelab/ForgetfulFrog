@@ -23,9 +23,13 @@
     <div id="buttonbar">
       <button id='bgmhideaway' onclick="startBGM"></button>
       <img id="fullscreenh" src='img/exitfullscreen.png'>
-      <img id="sound" src='img/volumeon.svg'>
+      <img id="sound" src='img/volumeon.svg' onclick="toggleSounds()">
       <img id="music" src='img/musicon.png' onclick="toggleBGM()">
       <img id="profile" src='img/levelCircle.png'>
+      <audio id='hop' src='audio/hop.wav'></audio>
+      <audio id='ding' src='audio/ding.wav'></audio>
+      <audio id='splash' src='audio/splash.wav'></audio>
+      <audio id='bgm' src='audio/bga2.wav' autoplay loop></audio>
     </div>
     <div id="tutorial">
       <div id='tutbox'>
@@ -47,25 +51,81 @@
     var tutover = false;
     var score = 0;
     var goal = 500;
+    var silenced = false;
 
-    var bgm = new Audio("audio/bga2.wav");
-    bgm.id = 'bgm';
-    bgm.autoplay = true;
-    bgm.loop = true;
-    bgm.volume = 0.7;
-    bgm.load();
+    var bgm = null;//new Audio("audio/bga2.wav");
+    //bgm.id = 'bgm';
+    //bgm.load();
 
     startBGM = function(){
-      bgm.play();
+      if(!silenced){
+        bgm.play();
+      }
     }
 
     toggleBGM = function(){
       if(!bgm.paused){
         bgm.pause();
+        silenced = true;
       }
       else{
         bgm.currentTime = 0;
         bgm.play();
+        silenced = false;
+      }
+    }
+
+    var hop = null;
+    var ding = null;
+    var splash = null;
+    
+    initSounds = function(){/*
+      hop = document.createElement("AUDIO");
+      hop.src = "audio/hop.wav";
+      ding = document.createElement("AUDIO");
+      ding.src = "audio/ding.wav";
+      splash = document.createElement("AUDIO");
+      splash.src = "audio/splash.wav"*/
+      hop = document.getElementById("hop");
+      ding = document.getElementById("ding");
+      splash = document.getElementById("splash");
+      bgm = document.getElementById("bgm"); 
+      bgm.volume = 0.7;
+      if(bgm.paused && !silenced){
+        bgm.play();
+      }
+    }
+
+    toggleSounds = function(){
+      if(hop == null || splash == null || ding == null || bgm == null){
+        initSounds();
+      }
+      if(hop.volume == 1.0){
+        hop.volume = 0.0;
+      }
+      else{
+        hop.volume = 1.0;
+      }
+      if(ding.volume == 1.0){
+        ding.volume = 0.0;       
+      }
+      else{
+        ding.volume = 1.0;
+      }
+      if(splash.volume == 1.0){
+        splash.volume = 0.0;       
+      }
+      else{
+        splash.volume = 1.0;
+      }
+      if(!bgm.paused){
+        bgm.pause();
+        silenced = true;
+      }
+      else{
+        bgm.currentTime = 0;
+        bgm.play();
+        silenced = false;
       }
     }
 
@@ -183,11 +243,8 @@
 
     var faded = false;
     fadeInCircle = function(){
-      console.log("in")
       var cw = document.getElementById('circlewrap');
-      console.log(cw.style.opacity);
       cw.style.opacity = parseFloat(cw.style.opacity) + .04;
-      console.log(cw.style.opacity);
       if(cw.style.opacity < 1){
         window.requestAnimationFrame(fadeInCircle);
       }
@@ -196,7 +253,6 @@
       }
     }
     fadeOutCircle = function(){
-      console.log('out');
       var cw = document.getElementById('circlewrap');
       cw.style.opacity = parseFloat(cw.style.opacity) - .04;
       if(cw.style.opacity > 0){

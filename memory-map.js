@@ -590,11 +590,11 @@ jsPsych.plugins['memory-map'] = (function(){
         board.canvas.style.top = "0px";
         frogboard.canvas.style.top = "0px";
         frogboard.canvas.width = Math.floor(display_element.clientHeight);
-        frogboard.canvas.height = Math.floor(display_element.clientHeight);
+        frogboard.canvas.height = frogboard.canvas.width;
         board.canvas.width = frogboard.canvas.width;
         board.canvas.height = frogboard.canvas.height;
-        candiv.style.width = Math.floor(display_element.clientWidth) + "px";
-        candiv.style.height = Math.floor(display_element.clientHeight) + "px";
+        candiv.style.width = frogboard.canvas.width;
+        candiv.style.height = frogboard.canvas.width;
         infoBar.style.width = "30%";
         infoBar.style.height = "15%";
         levels.width = infoBar.width;
@@ -602,7 +602,7 @@ jsPsych.plugins['memory-map'] = (function(){
         lives.width = infoBar.width;
         lives.height = infoBar.height;
         board.canvas.style.left = ((display_element.clientWidth/2) - document.querySelector('#canvas-board').offsetWidth/2) + "px";
-        frogboard.canvas.style.left = ((display_element.clientWidth/2) - document.querySelector('#charcan').offsetWidth/2) + "px";
+        frogboard.canvas.style.left = board.canvas.style.left;
       }
       else{
         ratio = window.innerWidth/window.innerHeight;
@@ -743,49 +743,6 @@ jsPsych.plugins['memory-map'] = (function(){
       lvls += trial.exit_length+1;
       levels.innerText = lvls;
     }
-
-    var bgm = document.getElementById('bgm');
-    var hop;
-    var ding;
-    var splash;
-    initSounds = function(){
-      hop = document.createElement("AUDIO");
-      hop.src = "audio/hop.wav";
-      ding = document.createElement("AUDIO");
-      ding.src = "audio/ding.wav";
-      splash = document.createElement("AUDIO");
-      splash.src = "audio/splash.wav"
-    }
-
-    toggleSounds = function(){
-      if(hop.volume == 1.0){
-        hop.volume = 0.0;
-      }
-      else{
-        hop.volume = 1.0;
-      }
-      if(ding.volume == 1.0){
-        ding.volume = 0.0;       
-      }
-      else{
-        ding.volume = 1.0;
-      }
-      if(splash.volume == 1.0){
-        splash.volume = 0.0;       
-      }
-      else{
-        splash.volume = 1.0;
-      }
-      if(!bgm.paused){
-        bgm.pause();
-      }
-      else{
-        bgm.currentTime = 0;
-        bgm.play();
-      }
-    }
-
-    document.getElementById("sound").onclick = toggleSounds;
   
     beginGame = function(){
       time = performance.now();

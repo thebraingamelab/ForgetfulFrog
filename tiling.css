@@ -193,8 +193,8 @@
   }
 
   #levelCircle{
-    height: 200px;
-    width: 200px;
+    height: 25%;
+    width: 25%;
     align-content: center;
     z-index: 5;
   }
