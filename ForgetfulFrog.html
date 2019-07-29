@@ -44,7 +44,8 @@
     var timeline = [];
     var lives = 10000;
     //init to -n where n is # of tutorial stages
-    var consecutives = -2;
+    var spiketrack = -2;
+    var consecutives = 0;
     var fails = 0;
     var timemax = 3.5;
     var timemin = 2.5;
@@ -133,7 +134,7 @@
       type: "memory-map",
       exit_length: 4,
       lives: function(){return lives;},
-      wins: function(){return consecutives-1;},
+      wins: function(){return spiketrack-1;},
       score: function(){return score;},
       blackout_speed: function(){
         return ((Math.random() * (timemax - timemin))+timemin)*1000;
@@ -157,7 +158,7 @@
       row_length: 9,
       column_height: 9,
       lives: function(){return lives;},
-      wins: function(){return consecutives},
+      wins: function(){return spiketrack},
       on_finish: function(){
         var ts = jsPsych.data.get().last(1).filter({trial_type: 'memory-map'}).filter({success: false}).count();
         if(ts == 1){
@@ -182,7 +183,7 @@
                  1,1,1,1,1,1,1,1,1,],
       tutorial: false,
       lives: function(){return lives;},
-      wins: function(){return consecutives},
+      wins: function(){return spiketrack},
       on_finish: function(){
         var ts = jsPsych.data.get().last(1).filter({trial_type: 'memory-map'}).filter({success: false}).count();
         if(ts == 1){
@@ -190,7 +191,7 @@
         }
         else{
           fails = 0;
-          consecutives = 0;
+          spiketrack = 0;
           jsPsych.addNodeToEndOfTimeline(trial, function(){});
         }
       }
@@ -200,10 +201,11 @@
       if((ts == 1)&&tutover){
         lives--;
         fails++;
+        consecutives = 0;
         if(fails >= 3){
           timemax = 3.5;
           timemin = 2.5;
-          consecutives = 0;
+          spiketrack = 0;
           if(trial.exit_length>1){
             trial.exit_length = trial.exit_length - 1;
             document.getElementById("lvltxtC").innerHTML = "Level<br>"+trial.exit_length;
@@ -216,19 +218,30 @@
         if(score>0){
           score = score-(fails*5+5);
         }
+        if(score<0){
+          score = 0;
+        }
       }
     }
 
     function spikecheck(){
       var ts = jsPsych.data.get().last(1).filter({trial_type: 'memory-map'}).filter({success: true}).count();
-      if((ts == 1)&&(consecutives>=0)&&tutover){
+      if((ts == 1)&&(spiketrack>=0)&&tutover){
         timemax = timemax - .5;
         timemin = timemin - .5;
+        spiketrack++;
         consecutives++;
-        score = score+(consecutives*5+5);
+        if(consecutives >= 0){
+          if(consecutives == 0){
+            score = score+5;
+          }
+          else{
+            score = score+(consecutives*5+5);
+          }
+        }
       }
-      if(consecutives >= 5){
-        consecutives = 0;
+      if(spiketrack >= 5){
+        spiketrack = 0;
         fails = 0;
         trial.exit_length = trial.exit_length + 1;
         //must be set .5 higher since .5 subtracted after

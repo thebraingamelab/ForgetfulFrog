@@ -68,14 +68,19 @@ jsPsych.plugins['memory-map'] = (function(){
 
     //creating canvases that buffer paintings, like layers in photoshop
     var ground = document.createElement("canvas").getContext("2d");
+    ground.imageSmoothingEnabled = false;
     var pad = document.createElement("canvas").getContext("2d");
+    pad.imageSmoothingEnabled = false;
     var frogbuffer = document.createElement("canvas").getContext("2d");
+    frogbuffer.imageSmoothingEnabled = false;
     if(document.querySelector("#canbg") == null){
-      display_element.innerHTML = "<div id='canbg' style='background-image: url(img/waterSeamlessLoop.gif);'><canvas id='canvas-board'></canvas><canvas id='charcan'></canvas></div><div id='UI'><div id ='infoBar'><div id='infoBarImage'></div><span id='leveltxt'></span><span id='livestxt'></span></div><div id='controlpad'><div id='up'></div><div id='down'></div><div id='left'></div><div id='right'></div><img id = dpad src='img/dpad.png'></div></div>";
+      display_element.innerHTML = "<div id='canbg' style='background-color: #60c8cc;'><canvas id='canvas-board'></canvas><canvas id='charcan'></canvas></div><div id='UI'><div id ='infoBar'><div id='infoBarImage'></div><span id='leveltxt'></span><span id='livestxt'></span></div><div id='controlpad'><div id='up'></div><div id='down'></div><div id='left'></div><div id='right'></div><img id = dpad src='img/dpad.png'></div></div>";
     }
     var board = document.querySelector('#canvas-board').getContext("2d");
+    board.imageSmoothingEnabled = false;
     var wipers = document.querySelector('#canvas-board');
     var frogboard = document.querySelector('#charcan').getContext("2d");
+    frogboard.imageSmoothingEnabled = false;
     var candiv = document.querySelector("#canbg");
     var lives = document.querySelector("#livestxt");
     var levels = document.querySelector("#leveltxt");
