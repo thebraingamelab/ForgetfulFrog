@@ -47,17 +47,29 @@ jsPsych.plugins['memory-map'] = (function(){
         default: undefined,
         description: "The number of lives the player has left before game over"
       },
-      wins:{
+      consecutivewins:{
         type: jsPsych.plugins.parameterType.INT,
-        pretty_name: 'Wins',
+        pretty_name: 'consecutivewins',
         default: undefined,
-        description: "the number of wins the player has"
+        description: "the number of consecutivewins the player has"
       },
       score:{
         type: jsPsych.plugins.parameterType.INT,
         pretty_name: 'Score',
         default: 0,
         description: "The number of points the player has"
+      },
+      wins:{
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'consecutivewins',
+        default: undefined,
+        description: "the number of consecutivewins the player has"
+      },
+      fails:{
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'consecutivewins',
+        default: undefined,
+        description: "the number of consecutivewins the player has"
       }
     }
   }
@@ -81,7 +93,6 @@ jsPsych.plugins['memory-map'] = (function(){
     var wipers = document.querySelector('#canvas-board');
     var frogboard = document.querySelector('#charcan').getContext("2d");
     frogboard.imageSmoothingEnabled = false;
-    var candiv = document.querySelector("#canbg");
     var lives = document.querySelector("#livestxt");
     var levels = document.querySelector("#leveltxt");
     var fullscreen = document.getElementById("fullscreenh");
@@ -117,9 +128,6 @@ jsPsych.plugins['memory-map'] = (function(){
     var cross = document.createElement("img");
     //cross.onload = loadWaiter;
     cross.src = "img/cross.png";
-    var rot = document.createElement("img");
-    //rot.onload = loadWaiter;
-    rot.src = "img/rot.png";
     var frog = document.createElement("img");
     frog.onload = loadWaiter;
     frog.src = "img/frog.png";
@@ -140,7 +148,7 @@ jsPsych.plugins['memory-map'] = (function(){
       walkable: [0,2],
       learntime: trial.blackout_speed,
       lives: trial.lives,
-      wins: trial.wins
+      consecutivewins: trial.consecutivewins
     }
 
     //character data
@@ -598,8 +606,6 @@ jsPsych.plugins['memory-map'] = (function(){
         frogboard.canvas.height = frogboard.canvas.width;
         board.canvas.width = frogboard.canvas.width;
         board.canvas.height = frogboard.canvas.height;
-        candiv.style.width = frogboard.canvas.width;
-        candiv.style.height = frogboard.canvas.width;
         infoBar.style.width = "30%";
         infoBar.style.height = "15%";
         levels.width = infoBar.width;
@@ -617,8 +623,6 @@ jsPsych.plugins['memory-map'] = (function(){
         frogboard.canvas.height = Math.floor(display_element.clientWidth);
         board.canvas.width = frogboard.canvas.width;
         board.canvas.height = frogboard.canvas.height;
-        candiv.style.width = Math.floor(display_element.clientWidth) + "px";
-        candiv.style.height = Math.floor(display_element.clientHeight) + "px";
         infoBar.style.width = "40%";
         infoBar.style.height = "10%";
         //tutorial.style.width = "90%";
@@ -742,7 +746,7 @@ jsPsych.plugins['memory-map'] = (function(){
       var lvls = "LEVEL: ";
       lvls += trial.exit_length+" "
       for(let i = 0; i<5;i++){
-        if(i <= trial.wins+1){lvls = lvls+="* ";}
+        if(i <= trial.consecutivewins+1){lvls = lvls+="* ";}
         else{lvls+="o ";}
       }
       lvls += trial.exit_length+1;
@@ -776,14 +780,14 @@ jsPsych.plugins['memory-map'] = (function(){
       else{
         lvls += trial.exit_length+" "
         for(let i = 0; i<5;i++){
-          if(i <= trial.wins){lvls = lvls+="* ";}
+          if(i <= trial.consecutivewins){lvls = lvls+="* ";}
           else{lvls+="o ";}
         }
         lvls += trial.exit_length+1;
       } 
       //SCORE TEXT LIVES TEXT
       levels.innerText = lvls;
-      lives.innerText = "SCORE: "+trial.score;//"LIVES: "+trial.lives;
+      lives.innerText = "Accuracy: "+trial.wins+"/"+trial.fails;//"LIVES: "+trial.lives;
       if(!tutover){
         tutorial.style.opacity = 1;
         document.getElementById("infoBar").style.opacity = 0;
