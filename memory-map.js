@@ -390,28 +390,28 @@ jsPsych.plugins['memory-map'] = (function(){
           if(level.walkable.includes(collider(char.tx,char.ty))){
             padcheck = true;
           }
-          frog.src = "img/frogD.png";
+          frog.src = "img/frogDJ.png";
           chary = chary+shift;
           break;
         case 2:
           if(level.walkable.includes(collider(char.tx,char.ty))){
             padcheck = true;
           }
-          frog.src = "img/frogL.png";
+          frog.src = "img/frogLJ.png";
           charx = charx-shift;
           break;
         case 3:
           if(level.walkable.includes(collider(char.tx,char.ty))){
             padcheck = true;
           }
-          frog.src = "img/frogR.png";
+          frog.src = "img/frogRJ.png";
           charx = charx+shift;
           break;
         case 4:
           if(level.walkable.includes(collider(char.tx,char.ty))){
             padcheck = true;
           }
-          frog.src = "img/frog.png";
+          frog.src = "img/frogJ.png";
           chary = chary-shift;
           break;
       }
@@ -442,6 +442,26 @@ jsPsych.plugins['memory-map'] = (function(){
         }
       }
       else{
+        switch(frog.src.split("/").pop().split(".")[0]){
+          case "frogJ":
+            frog.src = "img/frog.png";
+            break;
+          case "frogDJ":
+            frog.src = "img/frogD.png";
+            break;
+          case "frogLJ":
+            frog.src = "img/frogL.png";
+            break;
+          case "frogRJ":
+            frog.src = "img/frogR.png";
+            break;
+        }    
+        frogbuffer.clearRect(0,0,frogbuffer.canvas.width,frogbuffer.canvas.height);
+        frogboard.clearRect(0,0,frogboard.canvas.width,frogboard.canvas.height);
+        pad.drawImage(lilypad, char.tx*level.scale, (char.ty-1)*level.scale, level.scale, level.scale);
+        frogboard.drawImage(pad.canvas, 0, 0, pad.canvas.width, pad.canvas.height, 0, 0, frogboard.canvas.width, frogboard.canvas.height);
+        frogbuffer.drawImage(frog,charx,chary,level.scale,level.scale);
+        frogboard.drawImage(frogbuffer.canvas, 0, 0, frogbuffer.canvas.width, frogbuffer.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
         start = null;
         totshift = 0;
         document.onkeydown = dirCheckK;
@@ -692,22 +712,6 @@ jsPsych.plugins['memory-map'] = (function(){
       beginGame();
     }
 
-    toggleFullScreen = function(e){
-      e.stopPropagation();
-      var doc = window.document;
-      var docEl = doc.documentElement;
-    
-      var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
-      var cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
-
-      if(!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
-        requestFullScreen.call(docEl);
-      }
-      else {
-        cancelFullScreen.call(doc);
-      }
-    }
-
     //Thanks to detectmobilebrowsers.com for the Open-Source regex
     window.mobileAndTabletcheck = function(){
       var check = false;
@@ -798,14 +802,15 @@ jsPsych.plugins['memory-map'] = (function(){
       }
       //this calls resize everytime the window changes size
       window.addEventListener("resize", resize, {passive:true});
+      /*//moved to html scope
       if(window.mobileAndTabletcheck()){
-        fullscreen.ontouchstart = toggleFullScreen;
+        //fullscreen.ontouchstart = toggleFullScreen;
       }
       else{
-        fullscreen.onclick = toggleFullScreen;
+        //fullscreen.onclick = toggleFullScreen;
         document.querySelector("#dpad").style.opacity = 0;
         dPadActive(false);
-      }
+      }*/
       initSounds();
       //window.addEventListener("orientationchange", restart, {passive:true});
       

@@ -11,6 +11,8 @@
     <script src="lib/jspsych-6.0.5/plugins/jspsych-html-button-response.js"></script>
     <!--<link href="../jspsych-6.0.5/css/jspsych.css" rel="stylesheet" type="text/css"></link>-->
     <link href = "tiling.css" rel = "stylesheet" type = "text/css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
@@ -22,9 +24,9 @@
     <script src="memory-map.js"></script>
     <div id="buttonbar">
       <button id='bgmhideaway' onclick="startBGM"></button>
-      <img id="fullscreenh" src='img/exitfullscreen.png'>
-      <img id="sound" src='img/volumeon.svg' onclick="toggleSounds()">
-      <img id="music" src='img/musicon.png' onclick="toggleBGM()">
+      <i class="material-icons" id='sound' onclick="toggleSounds()">volume_up</i>
+      <i class="material-icons" id='music' onclick="toggleBGM()">music_note</i>
+      <i class="material-icons" id='fullscreenh' onclick="toggleFullScreen()">fullscreen</i>
       <img id="profile" src='img/levelCircle.png'>
       <audio id='hop' src='audio/hop.wav'></audio>
       <audio id='ding' src='audio/ding.wav'></audio>
@@ -69,11 +71,31 @@
       if(!bgm.paused){
         bgm.pause();
         silenced = true;
+        document.getElementById('music').innerHTML = "music_off";
       }
       else{
         bgm.currentTime = 0;
         bgm.play();
         silenced = false;
+        document.getElementById('music').innerHTML = "music_note";
+      }
+    }
+
+    toggleFullScreen = function(){
+      //paramevent.stopPropagation();
+      var doc = window.document;
+      var docEl = doc.documentElement;
+    
+      var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
+      var cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
+
+      if(!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
+        document.getElementById('fullscreenh').innerHTML = "fullscreen_exit";
+        requestFullScreen.call(docEl);
+      }
+      else {
+        document.getElementById('fullscreenh').innerHTML = "fullscreen";
+        cancelFullScreen.call(doc);
       }
     }
 
@@ -103,11 +125,13 @@
       if(hop == null || splash == null || ding == null || bgm == null){
         initSounds();
       }
-      if(hop.volume == 1.0){
+      if(hop.volume == .5){
         hop.volume = 0.0;
+        document.getElementById('sound').innerHTML = "volume_mute";
       }
       else{
-        hop.volume = 1.0;
+        hop.volume = .5;
+        document.getElementById('sound').innerHTML = "volume_up";
       }
       if(ding.volume == 1.0){
         ding.volume = 0.0;       
@@ -245,8 +269,6 @@
           }
           else{
             score = (totalwins/totalfails)*100;
-            console.log(totalwins);
-            console.log(totalfails);
           }
         }
         else{
