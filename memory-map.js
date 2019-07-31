@@ -691,17 +691,6 @@ jsPsych.plugins['memory-map'] = (function(){
       }
     }
 
-    orientationFix = function(){
-      ///*
-      var temp = level.x;
-      level.x = level.y;
-      level.y = temp;
-      ground.canvas.width = level.x * level.scale;
-      ground.canvas.height = level.y * level.scale;
-      pad.canvas.width = level.x * level.scale;
-      pad.canvas.height = level.y * level.scale;
-    }
-
     var RAFid = [];
     restart = function(){
       wipeWaiters();
@@ -759,12 +748,12 @@ jsPsych.plugins['memory-map'] = (function(){
       time = performance.now();
       orientation = orientationCheck();
       //canvas = size * dimension of array
-      ground.canvas.width = level.x * level.scale;
-      ground.canvas.height = level.y * level.scale;
-      pad.canvas.width = level.x * level.scale;
-      pad.canvas.height = level.y * level.scale;
-      frogbuffer.canvas.width = level.x * level.scale;
-      frogbuffer.canvas.height = level.y * level.scale;
+      ground.canvas.width = Math.floor(display_element.clientHeight);
+      ground.canvas.height = Math.floor(display_element.clientHeight);
+      pad.canvas.width = Math.floor(display_element.clientHeight);
+      pad.canvas.height = Math.floor(display_element.clientHeight);
+      frogbuffer.canvas.width = Math.floor(display_element.clientHeight);
+      frogbuffer.canvas.height = Math.floor(display_element.clientHeight);
       lives.innerText = "LIVES";
       levels.innerText = "LEVEL";
       if(trial.game_map != null){
