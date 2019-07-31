@@ -76,6 +76,12 @@ jsPsych.plugins['memory-map'] = (function(){
         pretty_name: 'attempts',
         default: 0,
         description: "the number of times the player has played"
+      },
+      sprites:{
+        type: jsPsych.plugins.parameterType.ARRAY,
+        pretty_name: 'sprites',
+        default: null,
+        description: "An array of preloaded character sprites"
       }
     }
   }
@@ -136,10 +142,10 @@ jsPsych.plugins['memory-map'] = (function(){
     cross.src = "img/cross.png";
     var frog = document.createElement("img");
     frog.onload = loadWaiter;
-    frog.src = "img/frog.png";
+    frog.src = trial.sprites[0].src;
     var lilypad = document.createElement("img");
     lilypad.onload = loadWaiter;
-    lilypad.src = "img/padonly.png";
+    lilypad.src = trial.sprites[8].src;
     var fly = document.createElement("img");
     fly.onload = loadWaiter;
     fly.src = "img/flypad.png";
@@ -396,28 +402,28 @@ jsPsych.plugins['memory-map'] = (function(){
           if(level.walkable.includes(collider(char.tx,char.ty))){
             padcheck = true;
           }
-          frog.src = "img/frogDJ.png";
+          frog.src = trial.sprites[7].src;
           chary = chary+shift;
           break;
         case 2:
           if(level.walkable.includes(collider(char.tx,char.ty))){
             padcheck = true;
           }
-          frog.src = "img/frogLJ.png";
+          frog.src = trial.sprites[5].src;
           charx = charx-shift;
           break;
         case 3:
           if(level.walkable.includes(collider(char.tx,char.ty))){
             padcheck = true;
           }
-          frog.src = "img/frogRJ.png";
+          frog.src = trial.sprites[6].src;
           charx = charx+shift;
           break;
         case 4:
           if(level.walkable.includes(collider(char.tx,char.ty))){
             padcheck = true;
           }
-          frog.src = "img/frogJ.png";
+          frog.src = trial.sprites[4].src;
           chary = chary-shift;
           break;
       }
@@ -450,16 +456,16 @@ jsPsych.plugins['memory-map'] = (function(){
       else{
         switch(frog.src.split("/").pop().split(".")[0]){
           case "frogJ":
-            frog.src = "img/frog.png";
+            frog.src = trial.sprites[0].src;
             break;
           case "frogDJ":
-            frog.src = "img/frogD.png";
+            frog.src = trial.sprites[3].src;
             break;
           case "frogLJ":
-            frog.src = "img/frogL.png";
+            frog.src = trial.sprites[1].src;
             break;
           case "frogRJ":
-            frog.src = "img/frogR.png";
+            frog.src = trial.sprites[2].src;
             break;
         }    
         frogbuffer.clearRect(0,0,frogbuffer.canvas.width,frogbuffer.canvas.height);

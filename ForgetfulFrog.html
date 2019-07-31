@@ -147,80 +147,7 @@
         splash.volume = 1.0;
       }
     }
-
-    var trial = {
-      type: "memory-map",
-      exit_length: 5,
-      lives: function(){return lives;},
-      consecutivewins: function(){return spiketrack-1;},
-      score: function(){return score;},
-      wins: function(){return totalwins},
-      fails: function(){return totalfails},
-      attempts: function(){return attempts},
-      blackout_speed: function(){
-        return ((Math.random() * (timemax - timemin))+timemin)*1000;
-      },
-      on_start: function(){
-        tutover = true;
-      }
-    };
-    var tut1 = {
-      type: "memory-map",
-      game_map: [1,1,1,1,1,1,1,1,1,
-                 1,1,1,1,1,1,1,1,1,
-                 1,1,1,0,2,1,1,1,1,
-                 1,1,1,0,1,1,1,1,1,
-                 1,1,1,0,0,1,1,1,1,
-                 1,1,1,1,0,1,1,1,1,
-                 1,1,1,1,-1,1,1,1,1,
-                 1,1,1,1,1,1,1,1,1,
-                 1,1,1,1,1,1,1,1,1,],
-      tutorial: true,
-      row_length: 9,
-      column_height: 9,
-      lives: function(){return lives;},
-      consecutivewins: function(){return spiketrack},
-      wins: function(){return totalwins},
-      fails: function(){return totalfails},
-      on_finish: function(){
-        var ts = jsPsych.data.get().last(1).filter({trial_type: 'memory-map'}).filter({success: false}).count();
-        if(ts == 1){
-          jsPsych.addNodeToEndOfTimeline(tut1, function(){});
-        }
-        else{
-          document.getElementById("tuttxt").innerHTML = "The lilypads will disappear after you hop or wait too long, remember the path!"
-          jsPsych.addNodeToEndOfTimeline(tut2, function(){});
-        }
-      }
-    };
-    var tut2 = {
-      type: "memory-map",
-      game_map: [1,1,1,1,1,1,1,1,1,
-                 1,1,1,1,1,1,1,1,1,
-                 1,1,1,1,1,1,1,1,1,
-                 1,1,1,1,1,1,1,1,1,
-                 1,1,1,1,0,0,2,1,1,
-                 1,1,1,1,0,1,1,1,1,
-                 1,1,1,1,-1,1,1,1,1,
-                 1,1,1,1,1,1,1,1,1,
-                 1,1,1,1,1,1,1,1,1,],
-      tutorial: false,
-      lives: function(){return lives;},
-      consecutivewins: function(){return spiketrack},
-      wins: function(){return totalwins},
-      fails: function(){return totalfails},
-      on_finish: function(){
-        var ts = jsPsych.data.get().last(1).filter({trial_type: 'memory-map'}).filter({success: false}).count();
-        if(ts == 1){
-          jsPsych.addNodeToEndOfTimeline(tut2, function(){});
-        }
-        else{
-          fails = 0;
-          spiketrack = 0;
-          jsPsych.addNodeToEndOfTimeline(trial, function(){});
-        }
-      }
-    };
+    
     function failcheck(){
       var ts = jsPsych.data.get().last(1).filter({trial_type: 'memory-map'}).filter({success: false}).count();
       if((ts == 1)&&tutover){
@@ -343,6 +270,7 @@
         preloadImages.list = [];
     }
     var list = preloadImages.list;
+    var loadedlist = [];
     for (var i = 0; i < array.length; i++) {
         var img = new Image();
         img.onload = function() {
@@ -353,10 +281,92 @@
         }
         list.push(img);
         img.src = array[i];
+        loadedlist.push(img);
     }
-}
+    return loadedlist;
+  }
 
-preloadImages(["img/frog.png", "img/frogL.png", "img/frogR.png", "img/frogD.png", "img/frogJ.png", "img/frogLJ.png", "img/frogRJ.png", "img/frogDJ.png", "img/padonly.png", "img/flypad.png"]);
+  var sprites = preloadImages(["img/frog.png", "img/frogL.png", "img/frogR.png", "img/frogD.png", "img/frogJ.png", "img/frogLJ.png", "img/frogRJ.png", "img/frogDJ.png", "img/padonly.png", "img/flypad.png"]);
+
+  var tut1 = {
+      type: "memory-map",
+      game_map: [1,1,1,1,1,1,1,1,1,
+                 1,1,1,1,1,1,1,1,1,
+                 1,1,1,0,2,1,1,1,1,
+                 1,1,1,0,1,1,1,1,1,
+                 1,1,1,0,0,1,1,1,1,
+                 1,1,1,1,0,1,1,1,1,
+                 1,1,1,1,-1,1,1,1,1,
+                 1,1,1,1,1,1,1,1,1,
+                 1,1,1,1,1,1,1,1,1,],
+      tutorial: true,
+      row_length: 9,
+      column_height: 9,
+      lives: function(){return lives;},
+      consecutivewins: function(){return spiketrack},
+      wins: function(){return totalwins},
+      fails: function(){return totalfails},
+      sprites: function(){return sprites},
+      on_finish: function(){
+        var ts = jsPsych.data.get().last(1).filter({trial_type: 'memory-map'}).filter({success: false}).count();
+        if(ts == 1){
+          jsPsych.addNodeToEndOfTimeline(tut1, function(){});
+        }
+        else{
+          document.getElementById("tuttxt").innerHTML = "The lilypads will disappear after you hop or wait too long, remember the path!"
+          jsPsych.addNodeToEndOfTimeline(tut2, function(){});
+        }
+      }
+    };
+
+  var tut2 = {
+      type: "memory-map",
+      game_map: [1,1,1,1,1,1,1,1,1,
+                 1,1,1,1,1,1,1,1,1,
+                 1,1,1,1,1,1,1,1,1,
+                 1,1,1,1,1,1,1,1,1,
+                 1,1,1,1,0,0,2,1,1,
+                 1,1,1,1,0,1,1,1,1,
+                 1,1,1,1,-1,1,1,1,1,
+                 1,1,1,1,1,1,1,1,1,
+                 1,1,1,1,1,1,1,1,1,],
+      tutorial: false,
+      lives: function(){return lives;},
+      consecutivewins: function(){return spiketrack},
+      wins: function(){return totalwins},
+      fails: function(){return totalfails},
+      sprites: function(){return sprites},
+      on_finish: function(){
+        var ts = jsPsych.data.get().last(1).filter({trial_type: 'memory-map'}).filter({success: false}).count();
+        if(ts == 1){
+          jsPsych.addNodeToEndOfTimeline(tut2, function(){});
+        }
+        else{
+          fails = 0;
+          spiketrack = 0;
+          jsPsych.addNodeToEndOfTimeline(trial, function(){});
+        }
+      }
+    };
+
+  var trial = {
+      type: "memory-map",
+      exit_length: 5,
+      lives: function(){return lives;},
+      consecutivewins: function(){return spiketrack-1;},
+      score: function(){return score;},
+      wins: function(){return totalwins},
+      fails: function(){return totalfails},
+      sprites: function(){return sprites},
+      attempts: function(){return attempts},
+      blackout_speed: function(){
+        return ((Math.random() * (timemax - timemin))+timemin)*1000;
+      },
+      on_start: function(){
+        tutover = true;
+      }
+    };
+
 
   timeline.push(tut1);
   //begin
