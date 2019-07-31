@@ -115,20 +115,8 @@ jsPsych.plugins['memory-map'] = (function(){
     var tutorial = document.getElementById("tutorial");
 
     loadWaiter = function(){
-      imgs++;
-      if(totimgs == imgs){
-        //BEGIN CODE EXECUTION
-        if(window.innerHeight > window.innerWidth){
-          orientationFix();
-        }
-        beginGame();
-      }
-      else{
-        return;
-      }
+      beginGame();
     }
-    var imgs = 0;
-    var totimgs = 3;
     //blackout time switch
     var bo = false;
     var dead = false;
@@ -136,19 +124,17 @@ jsPsych.plugins['memory-map'] = (function(){
     //LOAD IMG ASSETS
     var check = document.createElement("img");
     //check.onload = loadWaiter;
-    check.src = "img/check.png";
+    check.src = trial.sprites[10].src;
     var cross = document.createElement("img");
     //cross.onload = loadWaiter;
-    cross.src = "img/cross.png";
+    cross.src = trial.sprites[11].src;
     var frog = document.createElement("img");
-    frog.onload = loadWaiter;
     frog.src = trial.sprites[0].src;
     var lilypad = document.createElement("img");
-    lilypad.onload = loadWaiter;
     lilypad.src = trial.sprites[8].src;
     var fly = document.createElement("img");
+    fly.src = trial.sprites[9].src;
     fly.onload = loadWaiter;
-    fly.src = "img/flypad.png";
     const infoBar = document.getElementById("infoBar");
   
     //map data
