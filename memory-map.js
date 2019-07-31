@@ -77,6 +77,12 @@ jsPsych.plugins['memory-map'] = (function(){
         default: 0,
         description: "the number of times the player has played"
       },
+      scale:{
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'scale',
+        default: 96,
+        description: "pixel dimensions of each tile"
+      },
       sprites:{
         type: jsPsych.plugins.parameterType.ARRAY,
         pretty_name: 'sprites',
@@ -140,7 +146,7 @@ jsPsych.plugins['memory-map'] = (function(){
     //map data
     var level = {
       map: trial.game_map,
-      scale: 64,
+      scale: trial.scale,
       x: trial.row_length,
       y: trial.column_height,
       walkable: [0,2],
@@ -382,7 +388,8 @@ jsPsych.plugins['memory-map'] = (function(){
       frogbuffer.clearRect(0,0,frogbuffer.canvas.width,frogbuffer.canvas.height);
       frogboard.clearRect(0,0,frogboard.canvas.width,frogboard.canvas.height);
       //shift should be a multiple of 2 since level.scale is as well
-      var shift = 8;
+      //AREA OF CONCERN
+      var shift = level.scale/5;
       switch(int){
         case 1:
           if(level.walkable.includes(collider(char.tx,char.ty))){
@@ -612,11 +619,14 @@ jsPsych.plugins['memory-map'] = (function(){
       }
     }
   
+    var canvasdim;
     //function that keeps the canvas element sized appropriately
     resize = function(event){
+
       var ratio = 1;
       //ORIENTATION DETECTION
       if(window.innerHeight < window.innerWidth){
+        canvasdim = Math.floor(display_element.clientHeight);
         ratio = window.innerHeight/window.innerWidth;
         board.canvas.style.top = "0px";
         frogboard.canvas.style.top = "0px";
@@ -634,6 +644,7 @@ jsPsych.plugins['memory-map'] = (function(){
         frogboard.canvas.style.left = board.canvas.style.left;
       }
       else{
+        canvasdim = Math.floor(display_element.clientWidth);
         ratio = window.innerWidth/window.innerHeight;
         board.canvas.style.left = "0px";
         frogboard.canvas.style.left = "0px";
@@ -663,7 +674,6 @@ jsPsych.plugins['memory-map'] = (function(){
       if(((level.x > level.y)&&(window.innerHeight>window.innerWidth))||((level.y>level.x)&&(window.innerWidth>window.innerHeight))){
         if(window.innerHeight>window.innerWidth){}
         if(window.innerHeight<window.innerWidth){}
-        orientationFix();
       }
       redraw();
     }
@@ -746,14 +756,23 @@ jsPsych.plugins['memory-map'] = (function(){
   
     beginGame = function(){
       time = performance.now();
+      if(display_element.clientHeight>display_element.clientWidth){
+        canvasdim = Math.floor(display_element.clientWidth);  
+        level.scale = Math.floor(display_element.clientWidth/trial.row_length);// + Math.floor(.5*display_element.clientWidth/trial.row_length);
+      }
+      else{
+        canvasdim = Math.floor(display_element.clientHeight);
+        level.scale = Math.floor(display_element.clientHeight/trial.row_length);
+      }
+      console.log(level.scale);
       orientation = orientationCheck();
       //canvas = size * dimension of array
-      ground.canvas.width = Math.floor(display_element.clientHeight);
-      ground.canvas.height = Math.floor(display_element.clientHeight);
-      pad.canvas.width = Math.floor(display_element.clientHeight);
-      pad.canvas.height = Math.floor(display_element.clientHeight);
-      frogbuffer.canvas.width = Math.floor(display_element.clientHeight);
-      frogbuffer.canvas.height = Math.floor(display_element.clientHeight);
+      ground.canvas.width = Math.floor(canvasdim);
+      ground.canvas.height = Math.floor(canvasdim);
+      pad.canvas.width = Math.floor(canvasdim);
+      pad.canvas.height = Math.floor(canvasdim);
+      frogbuffer.canvas.width = Math.floor(canvasdim);
+      frogbuffer.canvas.height = Math.floor(canvasdim);
       lives.innerText = "LIVES";
       levels.innerText = "LEVEL";
       if(trial.game_map != null){
