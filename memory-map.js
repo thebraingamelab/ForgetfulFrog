@@ -61,15 +61,21 @@ jsPsych.plugins['memory-map'] = (function(){
       },
       wins:{
         type: jsPsych.plugins.parameterType.INT,
-        pretty_name: 'consecutivewins',
+        pretty_name: 'wins',
         default: undefined,
-        description: "the number of consecutivewins the player has"
+        description: "the number of times the player has won"
       },
       fails:{
         type: jsPsych.plugins.parameterType.INT,
-        pretty_name: 'consecutivewins',
+        pretty_name: 'fails',
         default: undefined,
-        description: "the number of consecutivewins the player has"
+        description: "the number of times the player has failed"
+      },
+      attempts:{
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'attempts',
+        default: 0,
+        description: "the number of times the player has played"
       }
     }
   }
@@ -791,7 +797,7 @@ jsPsych.plugins['memory-map'] = (function(){
       } 
       //SCORE TEXT LIVES TEXT
       levels.innerText = lvls;
-      lives.innerText = "Accuracy: "+trial.wins+"/"+trial.fails;//"LIVES: "+trial.lives;
+      lives.innerText = "Accuracy: "+trial.wins+"/"+trial.attempts;//"LIVES: "+trial.lives;
       if(!tutover){
         tutorial.style.opacity = 1;
         document.getElementById("infoBar").style.opacity = 0;

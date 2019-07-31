@@ -49,6 +49,7 @@
     var spiketrack = -2;
     var totalwins = 0;
     var totalfails = 0;
+    var attempts = 0;
     var fails = 0;
     var timemax = 3.5;
     var timemin = 2.5;
@@ -145,15 +146,6 @@
       else{
         splash.volume = 1.0;
       }
-      if(!bgm.paused){
-        bgm.pause();
-        silenced = true;
-      }
-      else{
-        bgm.currentTime = 0;
-        bgm.play();
-        silenced = false;
-      }
     }
 
     var trial = {
@@ -164,6 +156,7 @@
       score: function(){return score;},
       wins: function(){return totalwins},
       fails: function(){return totalfails},
+      attempts: function(){return attempts},
       blackout_speed: function(){
         return ((Math.random() * (timemax - timemin))+timemin)*1000;
       },
@@ -340,10 +333,33 @@
           //Allow continue?
         }
       }
+      if(tutover){
+        attempts++;
+      }
     }
 
-    timeline.push(tut1);
-    //begin
+    function preloadImages(array) {
+    if (!preloadImages.list) {
+        preloadImages.list = [];
+    }
+    var list = preloadImages.list;
+    for (var i = 0; i < array.length; i++) {
+        var img = new Image();
+        img.onload = function() {
+            var index = list.indexOf(this);
+            if (index !== -1) {
+                list.splice(index, 1);
+            }
+        }
+        list.push(img);
+        img.src = array[i];
+    }
+}
+
+preloadImages(["img/frog.png", "img/frogL.png", "img/frogR.png", "img/frogD.png", "img/frogJ.png", "img/frogLJ.png", "img/frogRJ.png", "img/frogDJ.png", "img/padonly.png", "img/flypad.png"]);
+
+  timeline.push(tut1);
+  //begin
   jsPsych.init({
   timeline: timeline,
   display_element: 'game',
