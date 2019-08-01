@@ -456,7 +456,6 @@ jsPsych.plugins['memory-map'] = (function(){
       else{
         charx = Math.round(charx);
         chary = Math.round(chary);
-        console.log(charx);
         switch(frog.src.split("/").pop().split(".")[0]){
           case "frogJ":
             frog.src = trial.sprites[0].src;
@@ -633,7 +632,7 @@ jsPsych.plugins['memory-map'] = (function(){
     var canvasdim;
     //function that keeps the canvas element sized appropriately
     resize = function(event){
-
+      console.log("RESIZE");
       var ratio = 1;
       //ORIENTATION DETECTION
       if(window.innerHeight < window.innerWidth){
@@ -645,14 +644,23 @@ jsPsych.plugins['memory-map'] = (function(){
         frogboard.canvas.height = frogboard.canvas.width;
         board.canvas.width = frogboard.canvas.width;
         board.canvas.height = frogboard.canvas.height;
+        console.log("should resize 30%");
         infoBar.style.width = "30%";
         infoBar.style.height = "15%";
         levels.width = infoBar.width;
         levels.height = infoBar.height;
         lives.width = infoBar.width;
         lives.height = infoBar.height;
-        board.canvas.style.left = ((display_element.clientWidth/2) - document.querySelector('#canvas-board').offsetWidth/2) + "px";
+        board.canvas.style.left = ((display_element.clientWidth/2) - document.querySelector('#canvas-board').offsetWidth/2)/1.25 + "px";
         frogboard.canvas.style.left = board.canvas.style.left;
+        if(window.innerHeight < 390){
+          lives.style.fontSize = "80%";
+          levels.style.fontSize = "80%";
+        } 
+        if(window.innerHeight > 700){
+          lives.style.fontSize = "130%";
+          levels.style.fontSize = "130%";
+        }
       }
       else{
         canvasdim = Math.floor(display_element.clientWidth);
@@ -663,7 +671,7 @@ jsPsych.plugins['memory-map'] = (function(){
         frogboard.canvas.height = Math.floor(display_element.clientWidth);
         board.canvas.width = frogboard.canvas.width;
         board.canvas.height = frogboard.canvas.height;
-        infoBar.style.width = "40%";
+        infoBar.style.width = "45%";
         infoBar.style.height = "10%";
         //tutorial.style.width = "90%";
         //tutorial.style.height = "20%";
@@ -671,16 +679,16 @@ jsPsych.plugins['memory-map'] = (function(){
         levels.height = infoBar.height;
         lives.width = infoBar.width;
         lives.height = infoBar.height;
-        board.canvas.style.top = ((display_element.clientHeight/2) - document.querySelector('#canvas-board').offsetHeight/2) + "px";
+        board.canvas.style.top = ((display_element.clientHeight/2) - document.querySelector('#canvas-board').offsetHeight/2)/2 + "px";
         frogboard.canvas.style.top = board.canvas.style.top;
         if(window.innerWidth < 390){
           lives.style.fontSize = "80%";
           levels.style.fontSize = "80%";
+        } 
+        if(window.innerWidth > 700){
+          lives.style.fontSize = "130%";
+          levels.style.fontSize = "130%";
         }
-      }
-      if(window.innerWidth > 700){
-        lives.style.fontSize = "130%";
-        levels.style.fontSize = "130%";
       }
       if(((level.x > level.y)&&(window.innerHeight>window.innerWidth))||((level.y>level.x)&&(window.innerWidth>window.innerHeight))){
         if(window.innerHeight>window.innerWidth){}

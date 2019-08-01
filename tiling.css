@@ -113,24 +113,6 @@
     position: absolute;
   }
 
-  #up{
-    position: absolute;
-    top: 0%;
-    left: 33%;
-    width: 34px;
-    height: 34px;
-    z-index: 5;
-  }
-
-  #down{
-    position: absolute;
-    bottom: 0%;
-    left: 33%;
-    width: 34px;
-    height: 34px;
-    z-index: 5;
-  }
-
   #game {
     height: calc(100% - 25px);
     width: 100%;
@@ -209,28 +191,10 @@
     color: green;
   }
 
-  #left{
-    position: absolute;
-    top: 33%;
-    left: 0%;
-    width: 34px;
-    height: 34px;
-    z-index: 5;
-  }
-
-  #right{
-    position: absolute;
-    top: 33%;
-    right: 0%;
-    width: 34px;
-    height: 34px;
-    z-index: 5;
-  }
-
   #controlpad{
     position: absolute;
-    width: 100px;
-    height: 100px;
+    width: 150px;
+    height: 150px;
     bottom: 20px;
     right: 20px;
   }
@@ -242,7 +206,43 @@
     left: 0%;
     position: relative;
     z-index: 4;
-    opacity: .5;
+    opacity: 1;
+  }
+
+  #left{
+    position: absolute;
+    top: 33%;
+    left: 0%;
+    width: 50px;
+    height: 50px;
+    z-index: 5;
+  }
+
+  #right{
+    position: absolute;
+    top: 33%;
+    right: 0%;
+    width: 50px;
+    height: 50px;
+    z-index: 5;
+  }
+  
+  #up{
+    position: absolute;
+    top: 0%;
+    left: 33%;
+    width: 50px;
+    height: 50px;
+    z-index: 5;
+  }
+
+  #down{
+    position: absolute;
+    bottom: 0%;
+    left: 33%;
+    width: 50px;
+    height: 50px;
+    z-index: 5;
   }
 
   #infoBarImage{
