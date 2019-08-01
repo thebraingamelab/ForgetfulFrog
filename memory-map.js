@@ -104,7 +104,7 @@ jsPsych.plugins['memory-map'] = (function(){
     var frogbuffer = document.createElement("canvas").getContext("2d");
     frogbuffer.imageSmoothingEnabled = false;
     if(document.querySelector("#canbg") == null){
-      display_element.innerHTML = "<div id='canbg' style='background-color: #60c8cc;'><canvas id='canvas-board'></canvas><canvas id='charcan'></canvas></div><div id='UI'><div id ='infoBar'><div id='infoBarImage'></div><span id='leveltxt'></span><span id='livestxt'></span></div><div id='controlpad'><div id='up'></div><div id='down'></div><div id='left'></div><div id='right'></div><img id = dpad src='img/dpad.png'></div></div>";
+      display_element.innerHTML = "<div id='canbg' style='background-color: #60c8cc;'><canvas id='canvas-board'></canvas><canvas id='charcan'></canvas></div><div id='UI'><div id ='infoBar'><div id='infoBarImage'></div><span id='leveltxt'></span><span id='livestxt'></span></div><div id='controlpad'><div id='up'></div><div id='down'></div><div id='left'></div><div id='right'></div><img id = dpad src='img/dpad.svg'></div></div>";
     }
     var board = document.querySelector('#canvas-board').getContext("2d");
     board.imageSmoothingEnabled = false;
@@ -119,6 +119,7 @@ jsPsych.plugins['memory-map'] = (function(){
     var leftkey = document.querySelector("#left");
     var rightkey = document.querySelector("#right");
     var tutorial = document.getElementById("tutorial");
+    var dpad = document.getElementById("dpad");
 
     loadWaiter = function(){
       beginGame();
@@ -356,28 +357,37 @@ jsPsych.plugins['memory-map'] = (function(){
         case 2:
           char.ty = char.ty + 1;
           trial_data.inputs.push("Down");
+          dpad.src = "img/dpadD.svg";
           animateHop(Date.now(),1);
           break;
         case 4:
           char.tx = char.tx - 1;
           trial_data.inputs.push("Left");
+          dpad.src = "img/dpadL.svg";
           animateHop(Date.now(),2);
           break;
         case 6:
           char.tx = char.tx + 1;
           trial_data.inputs.push("Right");
+          dpad.src = "img/dpadR.svg";
           animateHop(Date.now(),3);
           break;
         case 8:
           char.ty = char.ty - 1;
           trial_data.inputs.push("Up");
+          dpad.src = "img/dpadU.svg";
           animateHop(Date.now(),4);
           break;
       }
     }
 
     var totshift = 0;
+    
     animateHop = function(timestamp,int){
+      //shift should be a multiple level.scale
+      //AREA OF CONCERN
+      var framesPerHop = 10;
+      var shift = (level.scale/framesPerHop);
       //document.ontouchstart = null;
       dPadActive(false);
       document.onkeydown = null;
@@ -387,9 +397,6 @@ jsPsych.plugins['memory-map'] = (function(){
       }
       frogbuffer.clearRect(0,0,frogbuffer.canvas.width,frogbuffer.canvas.height);
       frogboard.clearRect(0,0,frogboard.canvas.width,frogboard.canvas.height);
-      //shift should be a multiple of 2 since level.scale is as well
-      //AREA OF CONCERN
-      var shift = level.scale/5;
       switch(int){
         case 1:
           if(level.walkable.includes(collider(char.tx,char.ty))){
@@ -430,7 +437,7 @@ jsPsych.plugins['memory-map'] = (function(){
       }
       frogbuffer.drawImage(frog,charx,chary,level.scale,level.scale);
       frogboard.drawImage(frogbuffer.canvas, 0, 0, frogbuffer.canvas.width, frogbuffer.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
-      if(totshift<level.scale){
+      if(Math.round(totshift)<level.scale){
         switch(int){
           case 1:
             window.requestAnimationFrame(animateHopD);
@@ -447,6 +454,9 @@ jsPsych.plugins['memory-map'] = (function(){
         }
       }
       else{
+        charx = Math.round(charx);
+        chary = Math.round(chary);
+        console.log(charx);
         switch(frog.src.split("/").pop().split(".")[0]){
           case "frogJ":
             frog.src = trial.sprites[0].src;
@@ -470,6 +480,7 @@ jsPsych.plugins['memory-map'] = (function(){
         start = null;
         totshift = 0;
         document.onkeydown = dirCheckK;
+        dpad.src = "img/dpad.svg";
         dPadActive(true);
         if(level.walkable.includes(collider(char.tx,char.ty))){
           wincheck();
@@ -764,7 +775,6 @@ jsPsych.plugins['memory-map'] = (function(){
         canvasdim = Math.floor(display_element.clientHeight);
         level.scale = Math.floor(display_element.clientHeight/trial.row_length);
       }
-      console.log(level.scale);
       orientation = orientationCheck();
       //canvas = size * dimension of array
       ground.canvas.width = Math.floor(canvasdim);
