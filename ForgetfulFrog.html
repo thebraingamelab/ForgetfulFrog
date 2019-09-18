@@ -161,9 +161,9 @@
           timemax = 3.5;
           timemin = 2.5;
           spiketrack = 0;
-          if(trial.exit_length>1){
+          if(trial.exit_length>5){
             trial.exit_length = trial.exit_length - 1;
-            document.getElementById("lvltxtC").innerHTML = "Level<br>"+trial.exit_length;
+            document.getElementById("lvltxtC").innerHTML = "Level<br>"+(trial.exit_length-4);
             document.getElementById("lvltxtC").style.color = "red";
             document.getElementById('circlewrap').style.opacity = 0;
             window.requestAnimationFrame(fadeInCircle);
@@ -205,7 +205,7 @@
         //must be set .5 higher since .5 subtracted after
         timemax = 3.5;
         timemin = 2.5;
-        document.getElementById("lvltxtC").innerHTML = "Level<br>"+trial.exit_length;
+        document.getElementById("lvltxtC").innerHTML = "Level<br>"+(trial.exit_length-4);
         document.getElementById("lvltxtC").style.color = "green";
         document.getElementById('circlewrap').style.opacity = 0;
         window.requestAnimationFrame(fadeInCircle);
@@ -354,7 +354,7 @@
 
   var trial = {
       type: "memory-map",
-      exit_length: 20,
+      exit_length: 5,
       row_length: function(){
       },
       column_height: 15,

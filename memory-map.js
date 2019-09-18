@@ -632,7 +632,6 @@ jsPsych.plugins['memory-map'] = (function(){
     var canvasdim;
     //function that keeps the canvas element sized appropriately
     resize = function(event){
-      console.log("RESIZE");
       var ratio = 1;
       //ORIENTATION DETECTION
       if(window.innerHeight < window.innerWidth){
@@ -644,7 +643,6 @@ jsPsych.plugins['memory-map'] = (function(){
         frogboard.canvas.height = frogboard.canvas.width;
         board.canvas.width = frogboard.canvas.width;
         board.canvas.height = frogboard.canvas.height;
-        console.log("should resize 30%");
         infoBar.style.width = "30%";
         infoBar.style.height = "15%";
         levels.width = infoBar.width;
@@ -764,12 +762,12 @@ jsPsych.plugins['memory-map'] = (function(){
 
     updateInfo = function(){
       var lvls = "LEVEL: ";
-      lvls += trial.exit_length+" "
+      lvls += (trial.exit_length-4)+" "
       for(let i = 0; i<5;i++){
         if(i <= trial.consecutivewins+1){lvls = lvls+="* ";}
         else{lvls+="o ";}
       }
-      lvls += trial.exit_length+1;
+      lvls += (trial.exit_length-3);
       levels.innerText = lvls;
     }
   
@@ -806,12 +804,12 @@ jsPsych.plugins['memory-map'] = (function(){
         lvls += "TUTORIAL"
       }
       else{
-        lvls += trial.exit_length+" "
+        lvls += (trial.exit_length-4)+" "
         for(let i = 0; i<5;i++){
           if(i <= trial.consecutivewins){lvls = lvls+="* ";}
           else{lvls+="o ";}
         }
-        lvls += trial.exit_length+1;
+        lvls += (trial.exit_length-3);
       } 
       //SCORE TEXT LIVES TEXT
       levels.innerText = lvls;
