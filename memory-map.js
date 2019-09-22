@@ -132,10 +132,8 @@ jsPsych.plugins['memory-map'] = (function(){
     var time;
     //LOAD IMG ASSETS
     var check = document.createElement("img");
-    //check.onload = loadWaiter;
     check.src = trial.sprites[10].src;
     var cross = document.createElement("img");
-    //cross.onload = loadWaiter;
     cross.src = trial.sprites[11].src;
     var frog = document.createElement("img");
     frog.src = trial.sprites[0].src;
@@ -543,10 +541,33 @@ jsPsych.plugins['memory-map'] = (function(){
       frogbuffer.clearRect(0,0,frogbuffer.canvas.width,frogbuffer.canvas.height);
       frogboard.clearRect(0,0,frogboard.canvas.width,frogboard.canvas.height);
       splash.play();
-      ground.drawImage(cross, charx,chary, level.scale, level.scale);
-      board.drawImage(ground.canvas, 0, 0, ground.canvas.width, ground.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
+      animateSplash(Date.now,1);
       bo = false;
       delay(500,lose);
+    }
+
+    animateSplash = function(timestamp,splashVal){
+      switch(splashVal){
+        case 1:
+          cross.src = trial.sprites[11].src;
+          break;
+        case 2:
+          cross.src = trial.sprites[12].src;
+          break;
+        case 3:
+          cross.src = trial.sprites[13].src;
+          break;
+      }
+      board.clearRect(0,0,board.canvas.width,board.canvas.height);
+      board.drawImage(ground.canvas, 0, 0, ground.canvas.width, ground.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
+      ground.drawImage(cross, charx,chary, level.scale, level.scale);
+      board.drawImage(ground.canvas, 0, 0, ground.canvas.width, ground.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
+      if(splashVal < 4){
+        animateSplash(Date.now(),splashVal+1);
+      }
+      else{
+        cross.src = trial.sprites[11];
+      }
     }
 
     lose = function(){
