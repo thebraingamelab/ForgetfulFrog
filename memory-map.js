@@ -104,7 +104,7 @@ jsPsych.plugins['memory-map'] = (function(){
     var frogbuffer = document.createElement("canvas").getContext("2d");
     frogbuffer.imageSmoothingEnabled = false;
     if(document.querySelector("#canbg") == null){
-      display_element.innerHTML = "<div id='canbg' style='background-color: #60c8cc;'><canvas id='canvas-board'></canvas><canvas id='charcan'></canvas></div><div id='UI'><div id ='infoBar'><div id='infoBarImage'></div><span id='leveltxt'></span><span id='livestxt'></span></div><div id='controlpad'><div id='up'></div><div id='down'></div><div id='left'></div><div id='right'></div><img id = dpad src='img/dpad.svg'></div></div>";
+      display_element.innerHTML = "<div id='canbg' style='background-color: #60c8cc;'><canvas id='canvas-board'></canvas><canvas id='charcan'></canvas></div><div id='UI'><div id ='infoBar'><div id='infoBarImage'></div><span id='leveltxt'></span><span class= 'lvnum' id='curlv'></span><span class='dot' id='dot1'></span><span class='dot' id='dot2'></span><span class='dot' id='dot3'></span><span class='dot' id='dot4'></span><span class='dot' id='dot5'></span><span class= 'lvnum' id='nxlv'></span><span id='livestxt'></span></div><div id='controlpad'><div id='up'></div><div id='down'></div><div id='left'></div><div id='right'></div><img id = dpad src='img/dpad.svg'></div></div>";
     }
     var board = document.querySelector('#canvas-board').getContext("2d");
     board.imageSmoothingEnabled = false;
@@ -120,6 +120,8 @@ jsPsych.plugins['memory-map'] = (function(){
     var rightkey = document.querySelector("#right");
     var tutorial = document.getElementById("tutorial");
     var dpad = document.getElementById("dpad");
+    var curlv = document.getElementById("curlv");
+    var nxlv = document.getElementById("nxlv");
 
     loadWaiter = function(){
       beginGame();
@@ -653,10 +655,14 @@ jsPsych.plugins['memory-map'] = (function(){
         frogboard.canvas.style.left = board.canvas.style.left;
         if(window.innerHeight < 390){
           lives.style.fontSize = "80%";
+          curlv.style.fontSize = "80%";
+          nxlv.style.fontSize = "80%";
           levels.style.fontSize = "80%";
         } 
         if(window.innerHeight > 700){
           lives.style.fontSize = "130%";
+          curlv.style.fontSize = "130%";
+          nxlv.style.fontSize = "130%";
           levels.style.fontSize = "130%";
         }
       }
@@ -681,10 +687,14 @@ jsPsych.plugins['memory-map'] = (function(){
         frogboard.canvas.style.top = board.canvas.style.top;
         if(window.innerWidth < 390){
           lives.style.fontSize = "80%";
+          curlv.style.fontSize = "80%";
+          nxlv.style.fontSize = "80%";
           levels.style.fontSize = "80%";
         } 
         if(window.innerWidth > 700){
           lives.style.fontSize = "130%";
+          curlv.style.fontSize = "130%";
+          nxlv.style.fontSize = "130%";
           levels.style.fontSize = "130%";
         }
       }
@@ -761,14 +771,32 @@ jsPsych.plugins['memory-map'] = (function(){
     }
 
     updateInfo = function(){
-      var lvls = "LEVEL: ";
-      lvls += (trial.exit_length-4)+" "
+      var dot;
       for(let i = 0; i<5;i++){
-        if(i <= trial.consecutivewins+1){lvls = lvls+="* ";}
-        else{lvls+="o ";}
+        switch(i){
+          case 0:
+            dot = document.querySelector("#dot1");
+            break;
+          case 1:
+            dot = document.querySelector("#dot2");
+            break;
+          case 2:
+            dot = document.querySelector("#dot3");
+            break;
+          case 3:
+            dot = document.querySelector("#dot4");
+            break;
+          case 4:
+            dot = document.querySelector("#dot5");
+            break;
+        }
+        if(i <= trial.consecutivewins+1){
+          dot.style.backgroundColor = "green";
+        }
+        else{
+          dot.style.backgroundColor = "red";
+        }
       }
-      lvls += (trial.exit_length-3);
-      levels.innerText = lvls;
     }
   
     beginGame = function(){
@@ -790,7 +818,7 @@ jsPsych.plugins['memory-map'] = (function(){
       frogbuffer.canvas.width = Math.floor(canvasdim);
       frogbuffer.canvas.height = Math.floor(canvasdim);
       lives.innerText = "LIVES";
-      levels.innerText = "LEVEL";
+      levels.innerText = "LEVEL  :";
       if(trial.game_map != null){
         level.map = trial_data.map;
       }
@@ -799,20 +827,35 @@ jsPsych.plugins['memory-map'] = (function(){
       }
       infoBar.style.left = 0 + "px";
       infoBar.style.top = 5 + "px";
-      var lvls = "LEVEL: ";
-      if(trial.tutorial){
-        lvls += "TUTORIAL"
-      }
-      else{
-        lvls += (trial.exit_length-4)+" "
-        for(let i = 0; i<5;i++){
-          if(i <= trial.consecutivewins){lvls = lvls+="* ";}
-          else{lvls+="o ";}
+      var dot;
+      curlv.innerText = trial.exit_length-4;
+      for(let i = 0; i<5;i++){
+        switch(i){
+          case 0:
+            dot = document.querySelector("#dot1");
+            break;
+          case 1:
+            dot = document.querySelector("#dot2");
+            break;
+          case 2:
+            dot = document.querySelector("#dot3");
+            break;
+          case 3:
+            dot = document.querySelector("#dot4");
+            break;
+          case 4:
+            dot = document.querySelector("#dot5");
+            break;
         }
-        lvls += (trial.exit_length-3);
-      } 
+        if(i <= trial.consecutivewins){
+          dot.style.backgroundColor = "green";
+        }
+        else{
+          dot.style.backgroundColor = "red";
+        }
+      }
+      nxlv.innerText = trial.exit_length-3;
       //SCORE TEXT LIVES TEXT
-      levels.innerText = lvls;
       lives.innerText = "Accuracy: "+trial.wins+"/"+trial.attempts;//"LIVES: "+trial.lives;
       if(!tutover){
         tutorial.style.opacity = 1;

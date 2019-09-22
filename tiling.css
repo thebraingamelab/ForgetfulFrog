@@ -97,12 +97,59 @@
     position: absolute;
   }
 
+  .lvnum {
+    position: absolute;
+    top: 14%;
+    display: inline-block;
+    font-family: "Overpass";
+  }
+
+  #curlv {
+    left: 35%;
+  }
+
+  #nxlv {
+    left: 67%;
+  }
+
+  .dot {
+    position: absolute;
+    top: 17%;
+    height: 11%;
+    width: 4%;
+    background-color: red;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  #dot1 {
+    left: 42%;
+  }
+  #dot2 {
+    left: 47%;
+  }
+  #dot3 {
+    left: 52%;
+  }
+  #dot4 {
+    left: 57%;
+  }
+  #dot5 {
+    left: 62%;
+  }
+
   #leveltxt{
-    font-family: "Overpass"
+    font-family: "Overpass";
+    position: absolute;
+    top: 14%;
+    left: 10%;
   }
 
   #livestxt{
-    font-family: "Overpass"
+    font-family: "Overpass";
+    position: absolute;
+    top: 60%;
+    left: 10%;
   }
 
   #fullscreen{
@@ -251,18 +298,6 @@
     position: relative;
     background: black;
     opacity: .6;
-  }
-
-  #livestxt {
-    position: absolute;
-    top: 60%;
-    left: 10%;
-  }
-
-  #leveltxt {
-    position: absolute;
-    top: 10%;
-    left: 10%;
   }
 
   #check{
