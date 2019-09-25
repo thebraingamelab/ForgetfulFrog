@@ -354,6 +354,7 @@ jsPsych.plugins['memory-map'] = (function(){
       wipeWaiters();
       blackout();
       switch(dir){
+        //OPTIMIZE THIS INTO THE SPRITES FOR LOAD OPT
         case 2:
           char.ty = char.ty + 1;
           trial_data.inputs.push("Down");
@@ -541,12 +542,17 @@ jsPsych.plugins['memory-map'] = (function(){
       frogbuffer.clearRect(0,0,frogbuffer.canvas.width,frogbuffer.canvas.height);
       frogboard.clearRect(0,0,frogboard.canvas.width,frogboard.canvas.height);
       splash.play();
-      animateSplash(Date.now,1);
+      cross.src = trial.sprites[13].src;
+      ground.drawImage(cross, charx,chary, level.scale, level.scale);
+      board.drawImage(ground.canvas, 0, 0, ground.canvas.width, ground.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
+      //window.requestAnimationFrame(animateSplash);
       bo = false;
       delay(500,lose);
     }
 
-    animateSplash = function(timestamp,splashVal){
+    var splashVal = 1;
+
+    animateSplash = function(timestamp){
       switch(splashVal){
         case 1:
           cross.src = trial.sprites[11].src;
@@ -558,14 +564,17 @@ jsPsych.plugins['memory-map'] = (function(){
           cross.src = trial.sprites[13].src;
           break;
       }
+      ground.clearRect(0,0,ground.canvas.width,ground.canvas.height);
       board.clearRect(0,0,board.canvas.width,board.canvas.height);
       board.drawImage(ground.canvas, 0, 0, ground.canvas.width, ground.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
       ground.drawImage(cross, charx,chary, level.scale, level.scale);
       board.drawImage(ground.canvas, 0, 0, ground.canvas.width, ground.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
       if(splashVal < 4){
-        animateSplash(Date.now(),splashVal+1);
+        splashVal++;
+        window.requestAnimationFrame(animateSplash);
       }
       else{
+        splashVal = 1;
         cross.src = trial.sprites[11];
       }
     }
@@ -888,6 +897,19 @@ jsPsych.plugins['memory-map'] = (function(){
       }
       //this calls resize everytime the window changes size
       window.addEventListener("resize", resize, {passive:true});
+      if(!(window.mobileAndTabletcheck())){
+        document.querySelector("#nxlv").style.right = '10%';
+        var all = document.getElementsByClassName('dot');
+        //THIS DOES NOT FUNCTION PROPERLY, RUNS AND COMPARES Height = "" to Width = ""
+        for (var i = 0; i < all.length; i++) {
+          if(all[i].style.height > all[i].style.width){
+            all[i].style.width = all[i].style.height;
+          }
+          else if(all[i].style.height < all[i].style.width){
+            all[i].style.height = all[i].style.width;
+          }
+        }
+      }
       /*//moved to html scope
       if(window.mobileAndTabletcheck()){
         //fullscreen.ontouchstart = toggleFullScreen;

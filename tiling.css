@@ -105,11 +105,11 @@
   }
 
   #curlv {
-    left: 35%;
+    right: 40%;
   }
 
   #nxlv {
-    left: 68%;
+    right: 5%;
   }
 
   .dot {
@@ -123,19 +123,19 @@
   }
 
   #dot1 {
-    left: 41%;
+    right: 35%;
   }
   #dot2 {
-    left: 46%;
+    right: 30%;
   }
   #dot3 {
-    left: 51%;
+    right: 25%;
   }
   #dot4 {
-    left: 56%;
+    right: 20%;
   }
   #dot5 {
-    left: 61%;
+    right: 15%;
   }
 
   #leveltxt{
@@ -143,6 +143,10 @@
     position: absolute;
     top: 14%;
     left: 10%;
+  }
+
+  #lvtrack {
+    right: 0;
   }
 
   #livestxt{
