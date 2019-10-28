@@ -149,11 +149,18 @@
     right: 0;
   }
 
-  #livestxt{
+  #acctxt{
     font-family: "Overpass";
     position: absolute;
     top: 60%;
     left: 10%;
+  }
+
+  #livestxt{
+    font-family: "Overpass";
+    position: absolute;
+    top: 60%;
+    right: 10%;
   }
 
   #fullscreen{

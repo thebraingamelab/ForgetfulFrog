@@ -104,7 +104,7 @@ jsPsych.plugins['memory-map'] = (function(){
     var frogbuffer = document.createElement("canvas").getContext("2d");
     frogbuffer.imageSmoothingEnabled = false;
     if(document.querySelector("#canbg") == null){
-      display_element.innerHTML = "<div id='canbg' style='background-color: #60c8cc;'><canvas id='canvas-board'></canvas><canvas id='charcan'></canvas></div><div id='UI'><div id ='infoBar'><div id='infoBarImage'></div><span id='leveltxt'></span><span class= 'lvnum' id='curlv'></span><span class='dot' id='dot1'></span><span class='dot' id='dot2'></span><span class='dot' id='dot3'></span><span class='dot' id='dot4'></span><span class='dot' id='dot5'></span><span class= 'lvnum' id='nxlv'></span><span id='livestxt'></span></div><div id='controlpad'><div id='up'></div><div id='down'></div><div id='left'></div><div id='right'></div><img id = dpad src='img/dpad.svg'></div></div>";
+      display_element.innerHTML = "<div id='canbg' style='background-color: #60c8cc;'><canvas id='canvas-board'></canvas><canvas id='charcan'></canvas></div><div id='UI'><div id ='infoBar'><div id='infoBarImage'></div><span id='leveltxt'></span><span class= 'lvnum' id='curlv'></span><span class='dot' id='dot1'></span><span class='dot' id='dot2'></span><span class='dot' id='dot3'></span><span class='dot' id='dot4'></span><span class='dot' id='dot5'></span><span class= 'lvnum' id='nxlv'></span><span id='acctxt'></span><span id='livestxt'></span></div><div id='controlpad'><div id='up'></div><div id='down'></div><div id='left'></div><div id='right'></div><img id = dpad src='img/dpad.svg'></div></div>";
     }
     var board = document.querySelector('#canvas-board').getContext("2d");
     board.imageSmoothingEnabled = false;
@@ -122,6 +122,7 @@ jsPsych.plugins['memory-map'] = (function(){
     var dpad = document.getElementById("dpad");
     var curlv = document.getElementById("curlv");
     var nxlv = document.getElementById("nxlv");
+    var accutxt = document.getElementById("acctxt");
 
     loadWaiter = function(){
       beginGame();
@@ -545,7 +546,7 @@ jsPsych.plugins['memory-map'] = (function(){
       cross.src = trial.sprites[13].src;
       ground.drawImage(cross, charx,chary, level.scale, level.scale);
       board.drawImage(ground.canvas, 0, 0, ground.canvas.width, ground.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
-      //window.requestAnimationFrame(animateSplash);
+      window.requestAnimationFrame(animateSplash);
       bo = false;
       delay(500,lose);
     }
@@ -553,23 +554,24 @@ jsPsych.plugins['memory-map'] = (function(){
     var splashVal = 1;
 
     animateSplash = function(timestamp){
-      switch(splashVal){
-        case 1:
-          cross.src = trial.sprites[11].src;
-          break;
-        case 2:
-          cross.src = trial.sprites[12].src;
-          break;
-        case 3:
-          cross.src = trial.sprites[13].src;
-          break;
+      if(splashVal<4){
+        console.log("DRAW FRAME 1");
+        cross.src = trial.sprites[11].src;
+      }
+      else if(splashVal<7){
+        console.log("DRAW FRAME 2");
+        cross.src = trial.sprites[12].src;
+      }
+      else if(splashVal<10){
+        console.log("DRAW FRAME 3");
+        cross.src = trial.sprites[13].src;
       }
       ground.clearRect(0,0,ground.canvas.width,ground.canvas.height);
       board.clearRect(0,0,board.canvas.width,board.canvas.height);
       board.drawImage(ground.canvas, 0, 0, ground.canvas.width, ground.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
       ground.drawImage(cross, charx,chary, level.scale, level.scale);
       board.drawImage(ground.canvas, 0, 0, ground.canvas.width, ground.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
-      if(splashVal < 4){
+      if(splashVal < 16){
         splashVal++;
         window.requestAnimationFrame(animateSplash);
       }
@@ -685,12 +687,14 @@ jsPsych.plugins['memory-map'] = (function(){
         frogboard.canvas.style.left = board.canvas.style.left;
         if(window.innerHeight < 390){
           lives.style.fontSize = "80%";
+          accutxt.style.fontSize = "80%";
           curlv.style.fontSize = "80%";
           nxlv.style.fontSize = "80%";
           levels.style.fontSize = "80%";
         } 
         if(window.innerHeight > 700){
           lives.style.fontSize = "130%";
+          accutxt.style.fontSize = "130%";
           curlv.style.fontSize = "130%";
           nxlv.style.fontSize = "130%";
           levels.style.fontSize = "130%";
@@ -717,12 +721,14 @@ jsPsych.plugins['memory-map'] = (function(){
         frogboard.canvas.style.top = board.canvas.style.top;
         if(window.innerWidth < 390){
           lives.style.fontSize = "80%";
+          accutxt.style.fontSize = "80%";
           curlv.style.fontSize = "80%";
           nxlv.style.fontSize = "80%";
           levels.style.fontSize = "80%";
         } 
         if(window.innerWidth > 700){
           lives.style.fontSize = "130%";
+          accutxt.style.fontSize = "130%";
           curlv.style.fontSize = "130%";
           nxlv.style.fontSize = "130%";
           levels.style.fontSize = "130%";
@@ -886,7 +892,8 @@ jsPsych.plugins['memory-map'] = (function(){
       }
       nxlv.innerText = trial.exit_length-3;
       //SCORE TEXT LIVES TEXT
-      lives.innerText = "Accuracy: "+trial.wins+"/"+trial.attempts;//"LIVES: "+trial.lives;
+      accutxt.innerText = "Accuracy:";
+      lives.innerText = trial.wins+"/"+trial.attempts;//"LIVES: "+trial.lives;
       if(!tutover){
         tutorial.style.opacity = 1;
         document.getElementById("infoBar").style.opacity = 0;

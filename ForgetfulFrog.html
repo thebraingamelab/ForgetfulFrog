@@ -61,6 +61,10 @@
     var goal = 50;
     var endless = true;
     var silenced = false;
+    //true to save data to db
+    var savingSwitch = false;
+    var gameSessionID = null;
+    var userName = null;
 
     var bgm = null;//new Audio("audio/bga2.wav");
     //bgm.id = 'bgm';
@@ -311,6 +315,16 @@
       wins: function(){return totalwins},
       fails: function(){return totalfails},
       sprites: function(){return sprites},
+      on_start: function(){
+        if(gameSessionID == null){
+          //needs checking for duplicates
+          gameSessionID = jsPsych.randomization.randomID(32);
+        }
+        if(userName == null){
+          //needs checking for duplicates
+          userName = "anon-"+jsPsych.randomization.randomID(32);
+        }
+      },
       on_finish: function(){
         var ts = jsPsych.data.get().last(1).filter({trial_type: 'memory-map'}).filter({success: false}).count();
         if(ts == 1){
@@ -353,6 +367,23 @@
       }
     };
 
+  function saveGameplayData(user, game, session, trial){
+    var payload = {
+      UserID: user,
+      GameID: game,
+      SessionID: session,
+      TrialData: trial
+    }
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', 'https://api.thebraingamelab.org/savegameplaydata');
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.onload = function() {
+      if(xhr.status == 200){
+      }
+    };
+    xhr.send(JSON.stringify(payload));     
+  }
+
   var trial = {
       type: "memory-map",
       exit_length: 5,
@@ -391,6 +422,16 @@
           trial.row_length = 9;
           trial.column_height = 9;
         }
+      },
+      on_finish: function(trial){
+        if(savingSwitch){
+          saveGameplayData(userName,"forgetful-frog",gameSessionID,trial);
+          console.log("USER DATA WRITTEN");
+        }
+        else{
+          console.log("DATA WRITE: SKIPPED");
+        }
+        console.log("DATA: "+userName+", "+"forgetful-frog"+", "+gameSessionID);
       }
     };
 
