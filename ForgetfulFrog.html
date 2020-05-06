@@ -23,6 +23,7 @@
     <script src = "procgen.js" type = "text/javascript"></script>
     <script src="memory-map.js"></script>
     <div id="buttonbar">
+      <!--bgm hideaway is a forcible play of a sound, which browsers don't like, its fine but should be fixed for professionalism later-->
       <button id='bgmhideaway' onclick="startBGM"></button>
       <i class="material-icons" id='sound' onclick="toggleSounds()">volume_up</i>
       <i class="material-icons" id='music' onclick="toggleBGM()">music_note</i>
@@ -46,16 +47,24 @@
   
   </body>
   <script>
+    //jspsych timeline
     var timeline = [];
+    //variable containing # of tries user gets before game over
     var lives = 10000;
+    //variable that when it hits a certain value, difficulty increases
     //init to -n where n is # of tutorial stages
     var spiketrack = -2;
     var totalwins = 0;
     var totalfails = 0;
     var attempts = 0;
+    //variable containing the number of failures since the last difficulty drop
     var fails = 0;
+    //variable that contains the maximum amount of time a user gets to memorize
     var timemax = 3.5;
+    //variable that contains the minimum amount of time a user gets to memorize
     var timemin = 2.5;
+    //variable that stores whether the game is in tutorial mode, which ensures a number of gamerule changes
+    //tutorial mode includes preset map loading, no lives lost, and no pad dissappearance
     var tutover = false;
     var score = 0;
     var goal = 50;
@@ -70,12 +79,15 @@
     //bgm.id = 'bgm';
     //bgm.load();
 
+    //helper function that starts the background music if its not already started
+    //"BROWSER INSECURE" in current implementation, 
     startBGM = function(){
       if(!silenced){
         bgm.play();
       }
     }
 
+    //mutes and pauese music or unmutes and plays music depending on current state
     toggleBGM = function(){
       if(!bgm.paused){
         bgm.pause();
@@ -90,6 +102,7 @@
       }
     }
 
+    //This function toggles fullscreen settings using request and cancel depending on current view
     toggleFullScreen = function(){
       //paramevent.stopPropagation();
       var doc = window.document;
@@ -256,10 +269,13 @@
       }
     }
 
+    //runs after a map is completed to determine if a new map should be generated
     function postMap(){
+      //check if difficulty should decrease
       failcheck();
+      //check if difficulty should increase
       spikecheck();
-      //kill threshold
+      //if the goal of map clears isn't reached, or endless mode is enabled then make a new map
       if(((totalwins < goal)||(endless))&&(tutover)){
         jsPsych.addNodeToEndOfTimeline(trial, function(){});
       }
@@ -273,6 +289,8 @@
       }
     }
 
+    //preloads images specified in an array and returns the loaded list
+    //useful for optimizing load times and preventing ghost graphics
     function preloadImages(array) {
     if (!preloadImages.list) {
         preloadImages.list = [];
@@ -294,8 +312,10 @@
     return loadedlist;
   }
 
-  var sprites = preloadImages(["img/frog.png", "img/frogL.png", "img/frogR.png", "img/frogD.png", "img/frogJ.png", "img/frogLJ.png", "img/frogRJ.png", "img/frogDJ.png", "img/padonly.svg", "img/flypad.png", "img/check.png", "img/splash1.svg", "img/splash2.svg", "img/splash3.svg"]);
+  //generates the sprite sheet for the game
+  var sprites = preloadImages(["img/frog.png", "img/frogL.png", "img/frogR.png", "img/frogD.png", "img/frogJ.png", "img/frogLJ.png", "img/frogRJ.png", "img/frogDJ.png", "img/padonly.svg", "img/flypad.png", "img/check.png", "img/splash1.svg", "img/splash2.svg", "img/splash3.svg", "img/sparkle1.svg", "img/sparkle2.svg"]);
 
+  //jsPsych definition for tutorial level 1
   var tut1 = {
       type: "memory-map",
       game_map: [1,1,1,1,1,1,1,1,1,
@@ -326,6 +346,7 @@
         }
       },
       on_finish: function(){
+        //if the player failed the tutorial level, re-push the same level, otherwise push the next tutorial level
         var ts = jsPsych.data.get().last(1).filter({trial_type: 'memory-map'}).filter({success: false}).count();
         if(ts == 1){
           jsPsych.addNodeToEndOfTimeline(tut1, function(){});
@@ -337,6 +358,7 @@
       }
     };
 
+  //jsPsych definition for tutorial level 2
   var tut2 = {
       type: "memory-map",
       game_map: [1,1,1,1,1,1,1,1,1,
@@ -348,6 +370,7 @@
                  1,1,1,1,-1,1,1,1,1,
                  1,1,1,1,1,1,1,1,1,
                  1,1,1,1,1,1,1,1,1,],
+      //specifies tutorial is "over" since this is the last tutorial level and pads must disappear
       tutorial: false,
       lives: function(){return lives;},
       consecutivewins: function(){return spiketrack},
@@ -355,11 +378,13 @@
       fails: function(){return totalfails},
       sprites: function(){return sprites},
       on_finish: function(){
+        //if the player failed the tutorial level, push the same tutorial level, otherwise push the true game level
         var ts = jsPsych.data.get().last(1).filter({trial_type: 'memory-map'}).filter({success: false}).count();
         if(ts == 1){
           jsPsych.addNodeToEndOfTimeline(tut2, function(){});
         }
         else{
+          //reset spike and fails since game is actually beginning here
           fails = 0;
           spiketrack = 0;
           jsPsych.addNodeToEndOfTimeline(trial, function(){});
@@ -367,6 +392,7 @@
       }
     };
 
+  //stores jsPsych data from all trails to bgl xml
   function saveGameplayData(user, game, session, trial){
     var payload = {
       UserID: user,
@@ -384,6 +410,7 @@
     xhr.send(JSON.stringify(payload));     
   }
 
+  //the jsPsych declaration for the prototypical "game level" that players continously play through
   var trial = {
       type: "memory-map",
       exit_length: 5,
@@ -402,6 +429,7 @@
       },
       on_start: function(trial){
         tutover = true;
+        //nested conditional to scale game size depending on exit_length difficulty
         if(trial.exit_length>19){
           if(trial.exit_length>28){
             if(trial.exit_length>39){
@@ -437,7 +465,7 @@
 
 
   timeline.push(tut1);
-  //begin
+  //begin game using jsPsych framework
   jsPsych.init({
   timeline: timeline,
   display_element: 'game',

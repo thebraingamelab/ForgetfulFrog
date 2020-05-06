@@ -97,18 +97,35 @@ jsPsych.plugins['memory-map'] = (function(){
     dom_target.style.height = '100%';
 
     //creating canvases that buffer paintings, like layers in photoshop
+    //each of these is a BUFFER canvas, they are drawn onto and then 
+    //cleared when their contents are drawn onto the relevant visible canvas
+
+    //ground buffers non-player elements that are drawn at the start of a level and wiped
     var ground = document.createElement("canvas").getContext("2d");
     ground.imageSmoothingEnabled = false;
+    //pad buffers the pad that the player hops to, allowing for independent fading
     var pad = document.createElement("canvas").getContext("2d");
     pad.imageSmoothingEnabled = false;
+    //frogbuffer buffers player elements
     var frogbuffer = document.createElement("canvas").getContext("2d");
     frogbuffer.imageSmoothingEnabled = false;
+
+    //This if statement checks if the background is set up, and if not, it instantiates all relevant persistent elements like the dPad and infoBar
+    //It is a bit verbose, but necessary due to the nature of jsPsych's handling of display_elements
     if(document.querySelector("#canbg") == null){
+      //To add a persistent game element that should be present on initial load without waiting for a canvas draw step, add it here
       display_element.innerHTML = "<div id='canbg' style='background-color: #60c8cc;'><canvas id='canvas-board'></canvas><canvas id='charcan'></canvas></div><div id='UI'><div id ='infoBar'><div id='infoBarImage'></div><span id='leveltxt'></span><span class= 'lvnum' id='curlv'></span><span class='dot' id='dot1'></span><span class='dot' id='dot2'></span><span class='dot' id='dot3'></span><span class='dot' id='dot4'></span><span class='dot' id='dot5'></span><span class= 'lvnum' id='nxlv'></span><span id='acctxt'></span><span id='livestxt'></span></div><div id='controlpad'><div id='up'></div><div id='down'></div><div id='left'></div><div id='right'></div><img id = dpad src='img/dpad.svg'></div></div>";
     }
+
+    //Query Selector Variables
+    //store selection of persistent game elements here if they need to be accessed later
+
+    //board is the visible canvas that holds level pieces and non-player elements
     var board = document.querySelector('#canvas-board').getContext("2d");
     board.imageSmoothingEnabled = false;
+    //wipers is
     var wipers = document.querySelector('#canvas-board');
+    //frogboard is the visible canvas that the player is drawn onto
     var frogboard = document.querySelector('#charcan').getContext("2d");
     frogboard.imageSmoothingEnabled = false;
     var lives = document.querySelector("#livestxt");
@@ -132,6 +149,8 @@ jsPsych.plugins['memory-map'] = (function(){
     var dead = false;
     var time;
     //LOAD IMG ASSETS
+    var splish = document.createElement("img");
+    splish.src = trial.sprites[14].src;
     var check = document.createElement("img");
     check.src = trial.sprites[10].src;
     var cross = document.createElement("img");
@@ -163,6 +182,7 @@ jsPsych.plugins['memory-map'] = (function(){
       ty: 8
   }
 
+    //the data that is being recorded and will be stored to the database
     var trial_data = {
       "success": null,
       "sequence_size": trial.exit_length,
@@ -178,11 +198,10 @@ jsPsych.plugins['memory-map'] = (function(){
       "waited": false //true if they waited for blackout, false if they didn't
     }
   
+    //void return function that draws the map and characters
     drawMap = function() {
       //loop over array, checking val of each index to determine fill color (or image)
       for (let index = 0; index < level.map.length; index ++) {
-  
-        //REPLACE THIS WITH IMAGES WHEN WE HAVE GRAPHICS
 
         //check array val for type of tile & set fill color accordingly
         // 1 = black 0 = white 2 = exit
@@ -383,8 +402,10 @@ jsPsych.plugins['memory-map'] = (function(){
       }
     }
 
+    //variable that stores the incremental shift of the frog for animation and scaling
     var totshift = 0;
     
+    //this function animates the hop, and does so using the buffered canvas method
     animateHop = function(timestamp,int){
       //shift should be a multiple level.scale
       //AREA OF CONCERN
@@ -518,6 +539,8 @@ jsPsych.plugins['memory-map'] = (function(){
       moveChar(6);
     }
 
+    //activate or deactivates the dpad based on the boolean value parameter
+    //true = dpad on
     dPadActive = function(bool){
       if(bool){
         upkey.onclick = moveU;
@@ -533,7 +556,7 @@ jsPsych.plugins['memory-map'] = (function(){
       }
     }
 
-    //handles loss
+    //draws relevant failure based graphics and animations, plays the splash sound, and calls the lose function
     die = function(){
       document.onkeydown = null;
       dPadActive(false);
@@ -567,7 +590,7 @@ jsPsych.plugins['memory-map'] = (function(){
         cross.src = trial.sprites[13].src;
       }
       ground.clearRect(0,0,ground.canvas.width,ground.canvas.height);
-      board.clearRect(0,0,board.canvas.width,board.canvas.height);
+      board.clearRect(charx,chary,level.scale,level.scale);
       board.drawImage(ground.canvas, 0, 0, ground.canvas.width, ground.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
       ground.drawImage(cross, charx,chary, level.scale, level.scale);
       board.drawImage(ground.canvas, 0, 0, ground.canvas.width, ground.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
@@ -581,7 +604,41 @@ jsPsych.plugins['memory-map'] = (function(){
       }
     }
 
+    //animation framing management variable
+    var sparkleVal = 1;
+
+    //animates the sparkles, currently broken
+    animateSparkle = function(timestamp){
+      if(sparkleVal<4){
+        console.log("DRAW FRAME 1");
+        splish.src = trial.sprites[14].src;
+      }
+      else if(splashVal<7){
+        console.log("DRAW FRAME 2");
+        splish.src = trial.sprites[15].src;
+      }
+      else if(splashVal<10){
+        console.log("DRAW FRAME 3");
+        splish.src = trial.sprites[14].src;
+      }
+      ground.clearRect(0,0,ground.canvas.width,ground.canvas.height);
+      board.clearRect(charx,chary,level.scale,level.scale);
+      board.drawImage(ground.canvas, 0, 0, ground.canvas.width, ground.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
+      ground.drawImage(cross, charx,chary, level.scale, level.scale);
+      board.drawImage(ground.canvas, 0, 0, ground.canvas.width, ground.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
+      if(splashVal < 16){
+        splashVal++;
+        window.requestAnimationFrame(animateSparkle);
+      }
+      else{
+        splashVal = 1;
+        splish.src = trial.sprites[14];
+      }
+    }
+
+    //void return function that manages data on player failure and then ends the map
     lose = function(){
+      wipeTimeouts();
       trial_data.map[trial_data.startpos] = -1;
       trial_data.success = false;
       jsPsych.finishTrial(trial_data);
@@ -613,12 +670,15 @@ jsPsych.plugins['memory-map'] = (function(){
       }
     }
 
+    //void return function that manages data on player success and then ends the map
     win = function(){
+      wipeTimeouts();
       trial_data.map[trial_data.startpos] = -1;
       trial_data.success = true;
       jsPsych.finishTrial(trial_data);
     }
 
+    //a function that redraws the map and redraws it
     remap = function(){
       bo = false;
       mapGen();
@@ -626,6 +686,7 @@ jsPsych.plugins['memory-map'] = (function(){
       delay(level.learntime,blackoutrec);
     }
 
+    //makes lilypads disappear and records that the user waited the full time duration
     blackoutrec = function(){
       if(!trial.tutorial){
         trial_data.waited = true;
@@ -636,6 +697,7 @@ jsPsych.plugins['memory-map'] = (function(){
       blackout();
     }
 
+    //makes lilypads disappear 
     blackout = function(){
       //board.fillStyle = "#000000";
       if(!trial.tutorial){
@@ -664,7 +726,7 @@ jsPsych.plugins['memory-map'] = (function(){
     }
   
     var canvasdim;
-    //function that keeps the canvas element sized appropriately
+    //function that keeps the canvas elements, infobars, and texts all sized properly for the screen size
     resize = function(event){
       var ratio = 1;
       //ORIENTATION DETECTION
@@ -742,7 +804,7 @@ jsPsych.plugins['memory-map'] = (function(){
     }
 
 
-
+    //rotates a map, usually to fit a change in device orientation
     //dir, 0 = ccw 1 = cw
     rotate = function(map, dir){
       var new_map = map;
@@ -764,9 +826,12 @@ jsPsych.plugins['memory-map'] = (function(){
       }
     }
 
+    //stores the id of all delayed functions so they may be wiped upon a change in level
     var RAFid = [];
+    //restart the map and clear all delayed functions
     restart = function(){
       wipeWaiters();
+      wipeTimeouts();
       //if or fix
       remap();
       beginGame();
@@ -779,6 +844,7 @@ jsPsych.plugins['memory-map'] = (function(){
       return check;
     }
 
+    //clear all delayed functions
     wipeWaiters = function(){
       RAFid.forEach(element => {
         cancelAnimationFrame(element);
@@ -787,6 +853,7 @@ jsPsych.plugins['memory-map'] = (function(){
     }
 
     var start = null;
+    //delays a function func for int long in ms, and stores the id so they may be wiped later
     delay = function(int,func){
       if(start == null){
         start = Date.now();
@@ -806,6 +873,7 @@ jsPsych.plugins['memory-map'] = (function(){
       }
     }
 
+    //updates the gamestate info in the infobar
     updateInfo = function(){
       var dot;
       for(let i = 0; i<5;i++){
@@ -834,8 +902,39 @@ jsPsych.plugins['memory-map'] = (function(){
         }
       }
     }
+
+    //variable to store the id of all delayed sparkles
+    Timeoutids = [];
+    //begins the chain of animating sparkles
+    startSparkle = function(){
+      wipeTimeouts();
+      var splishx = Math.floor(Math.random() * Math.floor(level.x));
+      var splishy = Math.floor(Math.random() * Math.floor(level.y));
+      if(!(level.walkable.includes(collider(splishx,splishy)))){  
+        ground.clearRect(0,0,ground.canvas.width,ground.canvas.height);
+        board.clearRect(splishx,splishy,level.scale,level.scale);
+        board.drawImage(ground.canvas, 0, 0, ground.canvas.width, ground.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
+        ground.drawImage(splish, splishx*level.scale,splishy*level.scale, level.scale, level.scale);
+        frogboard.drawImage(ground.canvas, 0, 0, ground.canvas.width, ground.canvas.height, 0, 0, board.canvas.width, board.canvas.height);
+        window.requestAnimationFrame(animateSparkle);
+        Timeoutids.push(setTimeout(startSparkle,500));
+      }
+      else{
+        startSparkle();
+      }
+    }
+
+    //void return function to wipe the delayed sparkles
+    wipeTimeouts = function(){
+      Timeoutids.forEach(element => {
+        clearTimeout(element);
+      });
+      Timeoutids = [];
+    }
   
+    //instantiates the game and all beginning parameters
     beginGame = function(){
+      wipeTimeouts();
       time = performance.now();
       if(display_element.clientHeight>display_element.clientWidth){
         canvasdim = Math.floor(display_element.clientWidth);  
@@ -901,6 +1000,7 @@ jsPsych.plugins['memory-map'] = (function(){
       else{        
         tutorial.style.opacity = 0;
         document.getElementById("infoBar").style.opacity = 1;
+        //setTimeout(startSparkle,500);
       }
       //this calls resize everytime the window changes size
       window.addEventListener("resize", resize, {passive:true});
