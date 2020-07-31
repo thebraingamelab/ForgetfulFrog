@@ -1,0 +1,214 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, 
+        user-scalable=no, initial-scale=1, maximum-scale=1, user-scalable=0" />
+    
+    <script src="lib/jspsych-6.0.5/jspsych.js"></script>
+    <script src="lib/jspsych-6.0.5/plugins/jspsych-html-button-response.js"></script>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Overpass&display=swap" rel="stylesheet">
+
+    <!-- SVG icons -->
+    <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  
+        <symbol id="question-mark" viewBox="0 0 60 60">
+          <path d="M18 23.6296H26V18H34V26.2963H26V39.6296H34V34.2963H42V10H18V23.6296Z"/>
+          <path d="M34 42H26V50H34V42Z"/>
+        </symbol>
+        
+        <symbol id="music-note" viewBox="0 0 25 25">
+          <path d="M19.9813 0H9.98134H5V7.48134V14.9813H0V22.4627H5H9.98134V14.9813V7.48134H19.9813V17.4813H14.9813V24.9627H19.9813H24.9627V17.4813V7.48134V0H19.9813Z"/>
+        </symbol>
+      
+        <symbol id="pause-icon" viewBox="0 0 60 60">
+          <g clip-path="url(#clip0)">
+          <rect x="15" y="10" width="12.0588" height="40"/>
+          <rect x="32.9412" y="10" width="12.0588" height="40"/>
+          </g>
+          <defs>
+          <clipPath id="clip0">
+          <rect width="30" height="40" transform="translate(15 10)"/>
+          </clipPath>
+          </defs>
+        </symbol>
+      
+        <symbol id="volume-icon" viewBox="0 0 36 22">
+          <path d="M6.36667 4.71194H0V17.2552H6.36667L15.9333 21.9672V0L6.36667 4.71194Z"/>
+          <path d="M22.6 5.5H18.1333V16.4836H22.6V5.5Z" />
+          <path d="M29.2833 2.74182H24.8167V19.2254H29.2833V2.74182Z"/>
+          <path d="M35.9667 0H31.5V21.9672H35.9667V0Z"/>
+        </symbol>
+
+        <symbol id="no-volume-icon" viewBox="0 0 250 250">
+          <path d="M103.4 144.3V189.8L41.4 158.8H0V76.5L103.4 144.3Z"/>
+          <path d="M103.4 45V91.5L63.2 65.1L103.4 45Z"/>
+          <path d="M152.6 83.9V123.7L136.4 113.1L120.1 102.4V83.9H152.6Z"/>
+          <path d="M201.3 64.5V155.7L185.1 145L168.8 134.4V64.5H201.3Z"/>
+          <path d="M250 45V187.6L233.8 177L217.5 166.3V45H250Z"/>
+          <path d="M250 205.1H217.5L145.2 157.7L144.9 157.5L128.7 146.9L112 135.9L0 62.4L32.7 45L71.7 70.7L112 97.1L128.7 108L144.9 118.7L161.1 129.3L177.4 140L193.6 150.6L209.8 161.3L226.1 171.9L242.3 182.5L250 187.6V205.1Z"/>
+        </symbol>
+
+        <symbol id="heart" viewBox="0 0 13.948135 11.892736">
+            <path d="m 3.6844148,8.9068034 c -4.00686499,-3.85432 -3.98952899,-3.81162 -2.650092,-6.52785 l 0.855638,-1.73514992 1.856341,0.0765 1.856342,0.0765 0.836116,1.57457992 0.836116,1.57459 0.874318,-1.77302 0.874317,-1.77302992 h 1.7759002 1.7759 l 0.706492,1.52135992 c 0.388571,0.83674 0.771629,1.97877 0.851241,2.53783 0.143364,1.00675 0.112153,1.04914 -3.262967,4.43177 -1.8742432,1.8784096 -3.4689642,3.4091996 -3.5438242,3.4017496 -0.07486,-0.007 -1.713687,-1.53106 -3.641838,-3.3858096 z"/>
+        </symbol>
+        
+      </svg>
+
+    <!-- Resizer files -->
+    <script src="Resizer/config.js" defer></script>
+    <script src="Resizer/resizer.js" defer></script>
+
+    <!-- UI Template utility object -->
+    <script src="template.js" defer></script>
+
+
+    <!-- Your JS/CSS files go here -->
+    <!-- Note a defer attribute is necessary to ensure sequential execution of the scripts -->
+
+    <link href="style.css" rel="stylesheet">
+
+    <script src="forgetfulfrog.js" defer></script>
+    <!--<script src="optional1.js" defer></script>-->
+    <!--<script src="optional2.js" defer></script>-->
+</head>
+
+<!-- The body is selected as the game container -->
+<body id="game-container">
+
+    <!-- The div containing the canvas -->
+    <div id="canvas-wrapper">
+
+        <!-- Big transparent box for dimming the background while in a menu -->
+        <div id="dimmer"></div>
+
+        <!-- Menu that notifies if a button is not yet implemented -->
+        <div class="menu" id="not-implemented-menu">
+            <div id="not-implemented-label">
+                <h1>SORRY!</h1>
+                <p>This button has not yet been implemented.</p>
+            </div>
+
+            <button id="not-implemented-back" class="menu-button">
+                <h2>BACK</h2>
+            </button>
+        </div>
+
+        <!-- Confirmation menu -->
+        <div class="menu" id="confirmation-menu">
+            <div id="confirmation-label">
+                <h1>ARE YOU SURE?</h1>
+            </div>
+
+            <button id="confirmation-yes" class="menu-button">
+                <h2>YES</h2>
+            </button>
+
+            <button id="confirmation-back" class="menu-button">
+                <h2>BACK</h2>
+            </button>
+        </div>
+
+        <!-- Top bar -->
+        <div id="top-bar">
+
+            <div id="pause-box" class="bar-button">
+                <button id="pause">
+                    <svg><use href="#pause-icon"></use></svg>
+                </button>
+            </div>
+
+            <div id="help-box" class="bar-button">
+                <button id="help">
+                    <svg><use href="#question-mark"></use></svg>
+                </button>
+            </div>
+
+            <div id="bar-label">
+                LEVEL:&nbsp;&nbsp;1
+            </div>
+
+            <div id="lives">
+                <svg><use href="#heart"></use></svg><svg><use href="#heart"></use></svg><svg><use href="#heart"></use></svg>
+            </div>
+
+        </div>
+
+        <!-- Pause Menu -->
+        <div class="menu" id="pause-menu">
+
+            <div id="pause-menu-label">
+                <h1>PAUSED</h1>
+            </div>
+
+            <button id="resume" class="menu-button">
+                <h2>RESUME</h2>
+            </button>
+            <button id="restart" class="menu-button">
+                <h2>RESTART</h2>
+            </button>
+            <button id="exit" class="menu-button">
+                <h2>EXIT</h2>
+            </button>
+
+            <div class="mini-button-container">
+                <button id="music-mini" class="mini-button">
+                    <svg><use href="#music-note"></use></svg>
+                </button>
+                <button id="volume-mini" class="mini-button">
+                    <svg><use href="#volume-icon"></use></svg>
+                </button>
+                <button id="help-mini" class="mini-button">
+                    <svg><use href="#question-mark"></use></svg>
+                </button>
+            </div>
+
+        </div>
+
+        <!-- Help menu -->
+        <div class="menu" id="help-menu">
+
+            <div id="help-menu-label">
+                <h1>HELP</h1>
+            </div>
+
+            <button id="tutorial" class="menu-button">
+                <h2>TUTORIAL</h2>
+            </button>
+            <button id="report-a-bug" class="menu-button">
+                <h2>REPORT A BUG</h2>
+            </button>
+            <button id="help-back" class="menu-button">
+                <h2>BACK</h2>
+            </button>
+
+        </div>
+
+        <!-- Any additional HTML content can go here -->
+        
+        <div id='controlpad'>
+            <div id='up'></div>
+            <div id='down'></div>
+            <div id='left'></div><div id='right'></div>
+            <img id = dpad src='img/dpad.svg'>
+        </div>
+
+        
+        <!-- The game canvas -->
+        <canvas id="game-canvas"></canvas>
+        <!-- The buffer for the game canvas -->
+        <canvas id="game-canvas-buffer"></canvas>
+        <!-- The canvas for just the frog-->
+        <canvas id="frog-canvas"></canvas>
+        <!-- The frog canvas buffer -->
+        <canvas id="frog-canvas-buffer"></canvas>
+        <!-- The board for just the pads -->
+        <canvas id="pad-canvas"></canvas>
+    </div>
+</body>
+
+</html>

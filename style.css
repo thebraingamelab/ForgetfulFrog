@@ -1,0 +1,697 @@
+
+/*/////////////////////////////////*/
+/* General element styles          */
+/*/////////////////////////////////*/
+
+/* Get rid of annoying automatic margins/padding, just override when needed */
+* {
+    margin: 0;
+    padding: 0;
+}
+
+/* Ensures the document body logically fits the size of the screen */
+html {
+    height: 100%;
+    width: 100%;
+}
+
+/* Also ensures the document body logically fits the size of the screen (no scrollbars either) */
+body {
+    background-color: black; 
+    margin: 0; 
+    padding: 0; 
+    overflow: hidden;
+    height: 100%;
+    width: 100%;
+
+    /* A container position other than static is required for canvas/wrapper positioning (i.e. bottom center) to work */
+    position: relative;
+
+    /* Set page font families */
+    font-family: 'Overpass', 'Segoe UI', monospace, sans-serif;
+}
+
+
+/* Make mouse cursor the little hand on all buttons, and remove outline*/
+button {
+    cursor: pointer;
+    outline: none;
+}
+
+
+
+/*/////////////////////////////////*/
+/* General menu styling            */
+/*/////////////////////////////////*/
+
+/* The menu box container */
+/**************************/
+.menu {
+    background-color:rgb(49, 58, 109);
+    z-index: 3;
+
+    /* Center the menu */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    /* Hide menu by default */
+    display: none;
+}
+
+/* General menu buttons */
+/************************/
+.menu-button {
+    display: block;
+    
+    margin-left: 10%;
+    margin-right: 10%;
+    margin-bottom: 12%;
+
+    width: 80%;
+    height: 12%;
+
+    color: rgb(15, 6, 68);
+    background-color: #F9F4E3;
+
+    border-style: none;
+    box-shadow: 5px 5px rgb(15, 6, 68);
+}
+
+.menu-button:hover {
+    background-color: rgb(189, 219, 15);
+}
+
+.menu-button:active {
+    background-color: rgb(189, 219, 15);
+
+    box-shadow: none;
+    transform: translate(3px, 3px);
+}
+
+/* Smaller menu buttons */
+/************************/
+.mini-button {
+    width: 20%;
+    height: 100%;
+    display: inline-block;
+
+    color: rgb(35, 42, 78);
+    background-color: #F9F4E3;
+
+    border-style: none;
+    box-shadow: 4px 4px rgb(35, 42, 78);
+
+    background-repeat: no-repeat;
+    background-size: 70% 70%;
+    background-position: center; 
+}
+
+.mini-button svg {
+    width: 100%;
+    height: 100%;
+    fill: #0F0644;
+}
+
+.mini-button:hover {
+    background-color: rgb(189, 219, 15);
+}
+
+.mini-button:active {
+    background-color: rgb(189, 219, 15);
+
+    box-shadow: none;
+    transform: translate(3px, 3px);
+}
+
+/* Container for a row of mini buttons */
+/***************************************/
+.mini-button-container {
+    margin-left: 10%;
+    margin-right: 10%;
+    height: 12%;
+
+    /* Evenly space menu inline-block buttons */
+    text-align: justify;
+}
+
+/* Necessary for text-align: justify to work on every inline-block element. */
+/* Because text-align: justify works on every line except the last. */
+.mini-button-container:after {
+    content: "";
+    display: inline-block;
+    width: 100%;
+}
+
+
+
+/*/////////////////////////////////*/
+/* Control Pad Styling             */
+/*/////////////////////////////////*/
+
+#controlpad{
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    bottom: 20px;
+    right: 20px;
+  }
+
+  #dpad{
+    width: 100%;
+    height: 100%;
+    top: 0%;
+    left: 0%;
+    position: relative;
+    z-index: 4;
+    opacity: 1;
+  }
+
+  #left{
+    position: absolute;
+    top: 33%;
+    left: 0%;
+    width: 50px;
+    height: 50px;
+    z-index: 5;
+  }
+
+  #right{
+    position: absolute;
+    top: 33%;
+    right: 0%;
+    width: 50px;
+    height: 50px;
+    z-index: 5;
+  }
+  
+  #up{
+    position: absolute;
+    top: 0%;
+    left: 33%;
+    width: 50px;
+    height: 50px;
+    z-index: 5;
+  }
+
+  #down{
+    position: absolute;
+    bottom: 0%;
+    left: 33%;
+    width: 50px;
+    height: 50px;
+    z-index: 5;
+  }
+
+/*/////////////////////////////////*/
+/* Specific menu styling           */
+/*/////////////////////////////////*/
+
+
+/* The div that dims the background */
+/************************************/
+
+#dimmer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    z-index: 1;
+    background-color: black;
+    pointer-events: none;
+
+    /* Hidden by default */
+    display: none;
+}
+
+
+/* Menu for confirming button clicks */
+/*************************************/
+#confirmation-menu {
+    width: 65%;
+}
+
+
+
+/* The "ARE YOU SURE?" banner on the menu */
+/******************************************/
+#confirmation-label {
+    width: 100%;
+    color: rgb(189, 219, 15);
+    position: relative;
+    display: block;
+
+    margin-top: 10%;
+    margin-bottom: 10%;
+}
+
+#confirmation-label > h1 {
+    /* Center the text within the label div */
+    text-align: center;
+}
+
+
+/* The confirmation menu's buttons */
+/**************************************/
+#confirmation-yes, #confirmation-back {
+    height: 3em;
+}
+
+
+/* The menu for when something is not implemented yet */
+/******************************************************/
+#not-implemented-menu {
+    width: 65%;
+}
+
+/* The "SORRY" banner on the menu */
+/***********************************/
+#not-implemented-label {
+    width: 100%;
+    color: rgb(189, 219, 15);
+    position: relative;
+    display: block;
+    text-align: center;
+    padding-top: 5%;
+    margin-bottom: 15%;
+}
+
+#not-implemented-label > h1 {
+    margin-bottom: 5%;
+}
+
+#not-implemented-label > p {
+    letter-spacing: 0px;
+}
+
+/* The not implemented menu's buttons */
+/**************************************/
+#not-implemented-back {
+    height: 3em;
+}
+
+
+/* The pause menu */
+/******************/
+
+#pause-menu {
+    height: 50%;
+    width: 65%;
+
+}
+
+/* The "PAUSED" banner on the menu */
+/***********************************/
+#pause-menu-label {
+    width: 100%;
+    height: 20%;
+    color: rgb(189, 219, 15);
+    position: relative;
+    display: block;
+}
+
+#pause-menu-label > h1 {
+    /* Center the text within the label div */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* The pause menu's mini-buttons */
+/*********************************/
+#music-mini svg {
+    width: 70%;
+}
+
+#volume-mini svg {
+    width: 70%;
+}
+
+
+
+
+/* The help menu */
+/*****************/
+
+#help-menu {
+    height: 45%;
+    width: 65%;
+}
+
+#help-menu .menu-button {
+    height: 14%;
+}
+
+/* The "HELP" banner on the menu */
+/*********************************/
+#help-menu-label {
+    width: 100%;
+    height: 30%;
+    color: rgb(219, 7, 92);
+    position: relative;
+    display: block;
+}
+
+#help-menu-label > h1 {
+    /* Center the text within the label div */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+
+
+
+/*///////////////////////////////////*/
+/* Styling for the top bar elements  */
+/*///////////////////////////////////*/
+
+#top-bar {
+    background-color: rgb(49, 58, 109);
+    margin: auto;
+    margin-top: 5%;
+    height: 6%;
+    width: 90%;
+    position: relative;
+    z-index: 1;
+}
+
+/* The text on the top bar (eg "LEVEL: 1") */
+/*******************************************/
+#bar-label {
+    color: white;
+    font-style: italic;
+    
+    position: absolute;
+    right: 5%;
+
+    /* Vertically center the text */
+    top: 50%;
+    height: 100%;
+    line-height: 25%;
+}
+
+
+/* Styling for general bar button elements */
+/*******************************************/
+.bar-button {
+    position: absolute;
+    z-index: 2;
+
+    /* Vertically center */
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.bar-button > button:active{
+    transform: translate(3px, 3px);
+ }
+
+ .bar-button > button {
+    height: 95%;
+    width: 95%;
+
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    border-style: none;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+}
+
+.bar-button > button > svg {
+    fill: white;
+    width: 100%;
+    height: 100%;
+}
+
+
+/* The life images */
+/*******************/
+#lives {
+    position: absolute;
+    top: 130%;
+    right: 0;
+    height: 50%;
+    width: 30%;
+    text-align: justify;
+}
+
+#lives svg {
+    height: 100%;
+    width: 30%;
+    display: inline-block;
+
+    fill: red;
+}
+
+#lives:after {
+    content: "";
+    display: inline-block;
+    width: 100%;
+}
+
+
+
+/*/////////////////////////////////*/
+/* Specific top bar button styling */
+/*/////////////////////////////////*/
+
+
+/* Pause button styling */
+/************************/
+#pause-box {
+    left: 0;
+}
+
+#pause {
+    background-color: rgb(189, 219, 15); /*#6E1B66;*/
+    box-shadow: 3px 3px rgb(113, 131, 9);/* #581652;*/
+}
+
+#pause:active {
+    box-shadow: none;
+}
+
+/* Help button styling */
+/***********************/
+#help-box {
+    /* Slightly to the right of the first box */
+    transform: translate(120%, -50%);
+}
+
+#help {
+    background-color: rgb(219, 7, 92);/*#8C042B;*/
+    box-shadow: 3px 3px rgb(141, 5, 60);/*#5e031d;*/
+}
+
+#help:active {
+    box-shadow: none;
+}
+
+
+/*/////////////////////////////////*/
+/* Misc. element styling           */
+/*/////////////////////////////////*/
+
+/* Styling for the game canvas */
+/*******************************/
+#game-canvas {
+    background-color: #60c8cc;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+
+
+/*/////////////////////////////////*/
+/* Media queries                   */
+/*/////////////////////////////////*/
+
+/* Remove the animation to avoid vestibular motion triggers like 
+/* scaling or panning large objects.                              */
+/******************************************************************/
+@media (prefers-reduced-motion) {
+    .center-popout {
+      animation: unset;
+      -webkit-animation: unset;
+    }
+
+    .center-popin {
+        animation: unset;
+        -webkit-animation: unset;
+    }
+  }
+
+/* Media queries to set different font sizes for various screen sizes */
+/**********************************************************************/
+@media screen and (min-height: 601px) {
+    * {
+        font-size: 16px;
+        letter-spacing: 3px;
+    }
+
+    h1 {
+        font-size: 30px;
+        letter-spacing: 4px;
+    }
+}
+
+@media screen and (max-height: 600px) {
+    * {
+        font-size: 14px;
+        letter-spacing: 2px;
+    }
+
+    h1 {
+        font-size: 26px;
+        letter-spacing: 3px;
+    }
+}
+
+@media screen and (max-height: 400px) {
+    * {
+        font-size: 12px;
+        letter-spacing: 1px;
+    }
+
+    h1 {
+        font-size: 22px;
+        letter-spacing: 2px;
+    }
+}
+
+@media screen and (max-height: 300px) {
+    * {
+        font-size: 8px;
+        letter-spacing: 0px;
+    }
+
+    h1 {
+        font-size: 10px;
+        letter-spacing: 2px;
+    }
+}
+
+@media screen and (max-height: 200px) {
+    * {
+        font-size: 6px;
+    }
+
+    h1 {
+        font-size: 8px;
+        letter-spacing: 1px;
+    }
+}
+
+
+
+/*/////////////////////////////////*/
+/* Animations                      */
+/*/////////////////////////////////*/
+
+/* Fade in, not all the way */
+/*****************************/
+.partial-fade-in {
+    opacity: 0.75;
+    animation: fadeInOpacity 0.12s ease-in forwards;
+    -webkit-animation: fadeInOpacity 0.12s ease-in forwards;
+}
+
+@keyframes fadeInOpacity {
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 0.75;
+	}
+}
+
+/* Fade out from partially faded state */
+/*****************************/
+.partial-fade-out {
+    opacity: 0;
+    animation: fadeOutOpacity 0.12s ease-in;
+    -webkit-animation: fadeOutOpacity 0.12s ease-in;
+}
+
+@keyframes fadeOutOpacity {
+	0% {
+		opacity: 0.75;
+	}
+	100% {
+        opacity: 0;
+	}
+}
+
+/* Go smaller to bigger, like popping out from the screen */
+/**********************************************************/
+.center-popout {
+    animation: center-popout 0.25s ease forwards;
+    -webkit-animation: center-popout 0.25s ease forwards;
+}
+@keyframes center-popout {
+    from{
+        transform: translate(-50%, -50%) scale(0);
+    }
+    70%{
+        transform: translate(-50%, -50%) scale(1.2);
+    }
+    /*90% {
+        transform: translate(-50%, -50%) scale(0.9);
+    }*/
+    to{
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+@-webkit-keyframes center-popout {
+    from{
+        transform: translate(-50%, -50%) scale(0);
+    }
+    70%{
+        transform: translate(-50%, -50%) scale(1.2);
+    }
+    /*90% {
+        transform: translate(-50%, -50%) scale(0.9);
+    }*/
+    to{
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+
+/* Go bigger to smaller, like popping into the screen */
+/******************************************************/
+.center-popin {
+    animation: center-popin 0.25s ease;
+    -webkit-animation: center-popin 0.25s ease;
+}
+@keyframes center-popin {
+    from{
+        transform: translate(-50%, -50%) scale(1);
+    }
+    30%{
+        transform: translate(-50%, -50%) scale(1.2);
+    }
+    to{
+        transform: translate(-50%, -50%) scale(0);
+    }
+}
+@-webkit-keyframes center-popin {
+    from{
+        transform: translate(-50%, -50%) scale(1);
+    }
+    30%{
+        transform: translate(-50%, -50%) scale(1.2);
+    }
+    to{
+        transform: translate(-50%, -50%) scale(0);
+    }
+}
+
