@@ -121,25 +121,25 @@ jsPsych.plugins['memory-map'] = (function(){
     //store selection of persistent game elements here if they need to be accessed later
 
     //board is the visible canvas that holds level pieces and non-player elements
-    var board = document.querySelector('#canvas-board').getContext("2d");
+    let board = document.querySelector('#canvas-board').getContext("2d");
     board.imageSmoothingEnabled = false;
     //wipers is
-    var wipers = document.querySelector('#canvas-board');
+    let wipers = document.querySelector('#canvas-board');
     //frogboard is the visible canvas that the player is drawn onto
-    var frogboard = document.querySelector('#charcan').getContext("2d");
+    let frogboard = document.querySelector('#charcan').getContext("2d");
     frogboard.imageSmoothingEnabled = false;
-    var lives = document.querySelector("#livestxt");
-    var levels = document.querySelector("#leveltxt");
-    var fullscreen = document.getElementById("fullscreenh");
-    var upkey = document.querySelector("#up");
-    var downkey = document.querySelector("#down");
-    var leftkey = document.querySelector("#left");
-    var rightkey = document.querySelector("#right");
-    var tutorial = document.getElementById("tutorial");
-    var dpad = document.getElementById("dpad");
-    var curlv = document.getElementById("curlv");
-    var nxlv = document.getElementById("nxlv");
-    var accutxt = document.getElementById("acctxt");
+    let lives = document.querySelector("#livestxt");
+    let levels = document.querySelector("#leveltxt");
+    let fullscreen = document.getElementById("fullscreenh");
+    let upkey = document.querySelector("#up");
+    let downkey = document.querySelector("#down");
+    let leftkey = document.querySelector("#left");
+    let rightkey = document.querySelector("#right");
+    let tutorial = document.getElementById("tutorial");
+    let dpad = document.getElementById("dpad");
+    let curlv = document.getElementById("curlv");
+    let nxlv = document.getElementById("nxlv");
+    let accutxt = document.getElementById("acctxt");
 
     loadWaiter = function(){
       beginGame();
