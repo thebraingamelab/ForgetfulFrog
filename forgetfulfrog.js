@@ -552,32 +552,23 @@
         var padcheck = false;
         frogBuffer.clearRect(0,0,frogBuffer.canvas.width,frogBuffer.canvas.height);
         frogboard.clearRect(0,0,frogboard.canvas.width,frogboard.canvas.height);
+        if(gameSettings.walkable.includes(collider(char.tx,char.ty))){
+          padcheck = true;
+        }
         switch(int){
           case 1:
-            if(gameSettings.walkable.includes(collider(char.tx,char.ty))){
-              padcheck = true;
-            }
             frog.src = sprites[7].src;
             chary = chary+shift;
             break;
           case 2:
-            if(gameSettings.walkable.includes(collider(char.tx,char.ty))){
-              padcheck = true;
-            }
             frog.src = sprites[5].src;
             charx = charx-shift;
             break;
           case 3:
-            if(gameSettings.walkable.includes(collider(char.tx,char.ty))){
-              padcheck = true;
-            }
             frog.src = sprites[6].src;
             charx = charx+shift;
             break;
           case 4:
-            if(gameSettings.walkable.includes(collider(char.tx,char.ty))){
-              padcheck = true;
-            }
             frog.src = sprites[4].src;
             chary = chary-shift;
             break;
@@ -826,7 +817,7 @@
         //wipeTimeouts();
         trial_data.map[trial_data.startpos] = -1;
         trial_data.success = true;
-        jsPsych.finishTrial(trial_data);
+        //jsPsych.finishTrial(trial_data);
     }
     
     //Separate check for win, so you are actualy displayed ON the wincon

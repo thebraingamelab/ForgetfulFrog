@@ -144,8 +144,6 @@ button {
     width: 100%;
 }
 
-
-
 /*/////////////////////////////////*/
 /* Control Pad Styling             */
 /*/////////////////////////////////*/
@@ -503,6 +501,13 @@ button {
 /*******************************/
 #game-canvas {
     background-color: #60c8cc;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+#frogboard {
+    z-index: 2;
     position: absolute;
     top: 0;
     left: 0;
