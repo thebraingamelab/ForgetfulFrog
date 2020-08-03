@@ -758,6 +758,24 @@
       }
     }
 
+    //not scalable as written, reminder to FIX THIS
+    //once the template is settled, should get an array of all lives elements and access by index heartNumber
+    function heartColoring(heartNumber){
+      switch(heartNumber){
+        case 0:
+          break;
+        case 1:
+          document.getElementById("heart1").style.fill = "#000000"
+          break;
+        case 2:
+          document.getElementById("heart2").style.fill = "#000000"
+          break;
+        case 3:
+          document.getElementById("heart3").style.fill = "#000000"
+          break;
+      }
+    }
+
     function drawGameWrap(){
       drawMap();
       charrender();
@@ -869,7 +887,6 @@
         //wipeTimeouts();
         //trial_data.map[trial_data.startpos] = -1;
         trial_data.success = false;
-        gameSettings.lives = gameSettings.lives - 1;
         //Currently, only checking lives here means trials_to_run refers to the successes needed to end
         if(gameSettings.lives > 0){
           data_collection.push(trial_data);
@@ -891,6 +908,8 @@
       //wipers.style.opacity = 1;
       frogBuffer.clearRect(0,0,frogBuffer.canvas.width,frogBuffer.canvas.height);
       frogBoard.clearRect(0,0,frogBoard.canvas.width,frogBoard.canvas.height);
+      gameSettings.lives = gameSettings.lives - 1;
+      heartColoring((3-gameSettings.lives));
       splash.play();
       cross.src = sprites[13].src;
       bufferCanvas.drawImage(cross, charx,chary, gameSettings.scale, gameSettings.scale);
