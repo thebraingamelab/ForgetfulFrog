@@ -680,7 +680,6 @@
       }
       bufferCanvas.clearRect(0,0,bufferCanvas.canvas.width,bufferCanvas.canvas.height);
       gameCanvas.clearRect(charx,chary,gameSettings.scale,gameSettings.scale);
-      gameCanvas.drawImage(bufferCanvas.canvas, 0, 0, bufferCanvas.canvas.width, bufferCanvas.canvas.height, 0, 0, gameCanvas.canvas.width, gameCanvas.canvas.height);
       bufferCanvas.drawImage(cross, charx,chary, gameSettings.scale, gameSettings.scale);
       gameCanvas.drawImage(bufferCanvas.canvas, 0, 0, bufferCanvas.canvas.width, bufferCanvas.canvas.height, 0, 0, gameCanvas.canvas.width, gameCanvas.canvas.height);
       if(splashVal < 16){
@@ -808,27 +807,29 @@
       //document.ontouchstart = dirCheckM;
       dPadActive(true);
       time = performance.now();
-      delay(gameSettings.blackout_speed,blackoutrec);
+      delay(500,drawMap);
+      delay(gameSettings.blackout_speed+500,blackoutrec);
 
     }
 
     //void return function that manages data on player success and then ends the map
     function win(){
         //wipeTimeouts();
-        trial_data.map[trial_data.startpos] = -1;
+        //trial_data.map[trial_data.startpos] = -1;
         trial_data.success = true;
+        pad.clearRect(0,0,pad.canvas.width,pad.canvas.height);
         //jsPsych.finishTrial(trial_data);
     }
     
     //Separate check for win, so you are actualy displayed ON the wincon
     function wincheck(){
-        if(gameSettings.map[char.tx+((char.ty-1)*gameSettings.x)] == 2){
+        if(gameSettings.map[char.tx+((char.ty-1)*gameSettings.row_length)] == 2){
           //block input whilewin screen is up
           //wipers.style.opacity = 1;
           document.onkeydown = null;
           dPadActive(false);
           bo = false;
-          if(tutover){updateInfo();}
+          //updateInfo();
           frogBuffer.drawImage(check,0,0,bufferCanvas.canvas.width,bufferCanvas.canvas.height);
           frogBoard.drawImage(frogBuffer.canvas, 0, 0, frogBuffer.canvas.width, frogBuffer.canvas.height, 0, 0, gameCanvas.canvas.width, gameCanvas.canvas.height);
           ding.play();
