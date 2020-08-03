@@ -757,6 +757,11 @@
           break;
       }
     }
+
+    function drawGameWrap(){
+      drawMap();
+      charrender();
+    }
   
 
     /////////////////////////////////////
@@ -803,8 +808,8 @@
       //save the solution in the trial_data
       trial_data.solution = data[1];
 
-      drawMap();
-      charrender();
+      //drawMap();
+      //charrender();
       initSounds();
 
       //blackout flag must be set before begin
@@ -813,7 +818,7 @@
       //document.ontouchstart = dirCheckM;
       dPadActive(true);
       time = performance.now();
-      delay(75,drawMap);
+      delay(75,drawGameWrap);
       delay(gameSettings.blackout_speed+75,blackoutrec);
 
     }
