@@ -54,7 +54,8 @@
         row_length: 9,
         column_height: 9,
         scale: 96,
-        walkable: [0,2]
+        walkable: [0,2],
+        lives: 3
     }
 
     //character data
@@ -62,6 +63,9 @@
         tx: 1,
         ty: 8
     }
+
+    //the amount of levels to complete
+    let trials_to_run = 5;
 
     //vars to hold the position of the frog in pixels
     let charx = char.tx*gameSettings.scale;
@@ -79,6 +83,7 @@
         input_type: null,
         device: navigator.userAgent,
         solution: null,
+        lives: 3, //lives remaining when completed
         ttp: [], //Time to press a key
         waited: false //true if they waited for blackout, false if they didn't
     }
@@ -471,6 +476,7 @@
       function blackout(){
         //TUTORIAL FLAG CONDITIONAL
         if(true){
+          gameCanvas.clearRect(0,0,gameCanvas.canvas.width,gameCanvas.canvas.height);
           frogBuffer.drawImage(lilypad, char.tx*gameSettings.scale, (char.ty-1)*gameSettings.scale, gameSettings.scale, gameSettings.scale);
           frogBuffer.drawImage(frog,charx,chary,gameSettings.scale,gameSettings.scale);
           frogBoard.drawImage(frogBuffer.canvas, 0, 0, frogBuffer.canvas.width, frogBuffer.canvas.height, 0, 0, gameCanvas.canvas.width, gameCanvas.canvas.height);
@@ -807,9 +813,17 @@
       //document.ontouchstart = dirCheckM;
       dPadActive(true);
       time = performance.now();
-      delay(500,drawMap);
-      delay(gameSettings.blackout_speed+500,blackoutrec);
+      delay(75,drawMap);
+      delay(gameSettings.blackout_speed+75,blackoutrec);
 
+    }
+
+    function newLevel(){
+      gameCanvas.clearRect(0,0,gameCanvas.canvas.width,gameCanvas.canvas.height);
+      bufferCanvas.clearRect(0,0,bufferCanvas.canvas.width,bufferCanvas.canvas.height);
+      frogBoard.clearRect(0,0,frogBoard.canvas.width,frogBoard.canvas.height);
+      frogBuffer.clearRect(0,0,frogBuffer.canvas.width,frogBuffer.canvas.height);
+      beginGame();
     }
 
     //void return function that manages data on player success and then ends the map
@@ -818,7 +832,14 @@
         //trial_data.map[trial_data.startpos] = -1;
         trial_data.success = true;
         pad.clearRect(0,0,pad.canvas.width,pad.canvas.height);
-        //jsPsych.finishTrial(trial_data);
+        trials_to_run = trials_to_run - 1;
+        if(trials_to_run > 0){
+          data_collection.push(trial_data);
+          delay(500, newLevel);
+        }
+        else{
+          return data_collection;
+        }
     }
     
     //Separate check for win, so you are actualy displayed ON the wincon
@@ -843,25 +864,35 @@
         //wipeTimeouts();
         //trial_data.map[trial_data.startpos] = -1;
         trial_data.success = false;
+        gameSettings.lives = gameSettings.lives - 1;
+        //Currently, only checking lives here means trials_to_run refers to the successes needed to end
+        if(gameSettings.lives > 0){
+          data_collection.push(trial_data);
+          delay(500, newLevel);
+        }
+        else{
+          return data_collection;
+        }
         //jsPsych.finishTrial(trial_data);
     }
 
     //draws relevant failure based graphics and animations, plays the splash sound, and calls the lose function
     function die(){
-        document.onkeydown = null;
-        dPadActive(false);
-        bo = false;
-        dead = true;
-        //wipers.style.opacity = 1;
-        frogBuffer.clearRect(0,0,frogBuffer.canvas.width,frogBuffer.canvas.height);
-        frogBoard.clearRect(0,0,frogBoard.canvas.width,frogBoard.canvas.height);
-        splash.play();
-        cross.src = sprites[13].src;
-        bufferCanvas.drawImage(cross, charx,chary, gameSettings.scale, gameSettings.scale);
-        gameCanvas.drawImage(bufferCanvas.canvas, 0, 0, bufferCanvas.canvas.width, bufferCanvas.canvas.height, 0, 0, gameCanvas.canvas.width, gameCanvas.canvas.height);
-        window.requestAnimationFrame(animateSplash);
-        bo = false;
-        delay(500,lose);
+      pad.clearRect(0,0,pad.canvas.width,pad.canvas.height);
+      document.onkeydown = null;
+      dPadActive(false);
+      bo = false;
+      dead = true;
+      //wipers.style.opacity = 1;
+      frogBuffer.clearRect(0,0,frogBuffer.canvas.width,frogBuffer.canvas.height);
+      frogBoard.clearRect(0,0,frogBoard.canvas.width,frogBoard.canvas.height);
+      splash.play();
+      cross.src = sprites[13].src;
+      bufferCanvas.drawImage(cross, charx,chary, gameSettings.scale, gameSettings.scale);
+      gameCanvas.drawImage(bufferCanvas.canvas, 0, 0, bufferCanvas.canvas.width, bufferCanvas.canvas.height, 0, 0, gameCanvas.canvas.width, gameCanvas.canvas.height);
+      window.requestAnimationFrame(animateSplash);
+      bo = false;
+      delay(500,lose);
     }
 
 
