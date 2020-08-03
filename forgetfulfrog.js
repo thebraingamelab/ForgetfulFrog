@@ -36,10 +36,13 @@
     var pad = resizer.getCanvas()[4].getContext("2d");
     pad.imageSmoothingEnabled = false;
     //frogbuffer buffers player elements
-    var frogboard = resizer.getCanvas()[2].getContext("2d");
-    frogboard.imageSmoothingEnabled = false;
+    var frogBoard = resizer.getCanvas()[2].getContext("2d");
+    frogBoard.imageSmoothingEnabled = false;
     var frogBuffer = resizer.getCanvas()[3].getContext("2d");
     frogBuffer.imageSmoothingEnabled = false;
+
+    //this is actually the canvas, named wipers due to its function of wiping pads away after time expiration
+    var wipers = resizer.getCanvas()[0];
 
     // Is the game volume muted?
     let volumeMuted = false;
@@ -441,9 +444,6 @@
           //ground.fillStyle = "#ff0000"
           charx = char.tx*gameSettings.scale;
           chary = (char.ty-1)*gameSettings.scale;
-          //removed if conditinal, may cause bug where frog is displayed while splash should replace it
-          bufferCanvas.drawImage(lilypad, charx, chary, gameSettings.scale, gameSettings.scale);
-          frogBuffer.drawImage(frog,charx,chary,gameSettings.scale,gameSettings.scale);
           if(dead == false){
             bufferCanvas.drawImage(lilypad, charx, chary, gameSettings.scale, gameSettings.scale);
             frogBuffer.drawImage(frog,charx,chary,gameSettings.scale,gameSettings.scale);
@@ -452,7 +452,7 @@
             //
           }
           gameCanvas.drawImage(bufferCanvas.canvas, 0, 0, bufferCanvas.canvas.width, bufferCanvas.canvas.height, 0, 0, gameCanvas.canvas.width, gameCanvas.canvas.height);
-          frogboard.drawImage(frogBuffer.canvas, 0, 0, frogBuffer.canvas.width, frogBuffer.canvas.height, 0, 0, gameCanvas.canvas.width, gameCanvas.canvas.height);
+          frogBoard.drawImage(frogBuffer.canvas, 0, 0, frogBuffer.canvas.width, frogBuffer.canvas.height, 0, 0, gameCanvas.canvas.width, gameCanvas.canvas.height);
       };
 
     //makes lilypads disappear and records that the user waited the full time duration
@@ -473,7 +473,7 @@
         if(true){
           frogBuffer.drawImage(lilypad, char.tx*gameSettings.scale, (char.ty-1)*gameSettings.scale, gameSettings.scale, gameSettings.scale);
           frogBuffer.drawImage(frog,charx,chary,gameSettings.scale,gameSettings.scale);
-          frogboard.drawImage(frogBuffer.canvas, 0, 0, frogBuffer.canvas.width, frogBuffer.canvas.height, 0, 0, gameCanvas.canvas.width, gameCanvas.canvas.height);
+          frogBoard.drawImage(frogBuffer.canvas, 0, 0, frogBuffer.canvas.width, frogBuffer.canvas.height, 0, 0, gameCanvas.canvas.width, gameCanvas.canvas.height);
           //wipers.style.opacity = 0;
           bo = true;
           //insert screen blackout here
@@ -551,7 +551,7 @@
         document.onkeydown = null;
         var padcheck = false;
         frogBuffer.clearRect(0,0,frogBuffer.canvas.width,frogBuffer.canvas.height);
-        frogboard.clearRect(0,0,frogboard.canvas.width,frogboard.canvas.height);
+        frogBoard.clearRect(0,0,frogBoard.canvas.width,frogBoard.canvas.height);
         if(gameSettings.walkable.includes(collider(char.tx,char.ty))){
           padcheck = true;
         }
@@ -578,11 +578,11 @@
           pad.clearRect(0,0,pad.canvas.width,pad.canvas.height);
           pad.drawImage(lilypad, char.tx*gameSettings.scale, (char.ty-1)*gameSettings.scale, gameSettings.scale, gameSettings.scale);
           pad.globalAlpha = totshift/gameSettings.scale;
-          frogboard.drawImage(pad.canvas, 0, 0, pad.canvas.width, pad.canvas.height, 0, 0, frogboard.canvas.width, frogboard.canvas.height);
+          frogBoard.drawImage(pad.canvas, 0, 0, pad.canvas.width, pad.canvas.height, 0, 0, frogBoard.canvas.width, frogBoard.canvas.height);
           pad.clearRect(0,0,pad.canvas.width,pad.canvas.height);
         }
         frogBuffer.drawImage(frog,charx,chary,gameSettings.scale,gameSettings.scale);
-        frogboard.drawImage(frogBuffer.canvas, 0, 0, frogBuffer.canvas.width, frogBuffer.canvas.height, 0, 0, gameCanvas.canvas.width, gameCanvas.canvas.height);
+        frogBoard.drawImage(frogBuffer.canvas, 0, 0, frogBuffer.canvas.width, frogBuffer.canvas.height, 0, 0, gameCanvas.canvas.width, gameCanvas.canvas.height);
         if(Math.round(totshift)<gameSettings.scale){
           switch(int){
             case 1:
@@ -617,11 +617,11 @@
               break;
           }    
           frogBuffer.clearRect(0,0,frogBuffer.canvas.width,frogBuffer.canvas.height);
-          frogboard.clearRect(0,0,frogboard.canvas.width,frogboard.canvas.height);
+          frogBoard.clearRect(0,0,frogBoard.canvas.width,frogBoard.canvas.height);
           pad.drawImage(lilypad, char.tx*gameSettings.scale, (char.ty-1)*gameSettings.scale, gameSettings.scale, gameSettings.scale);
-          frogboard.drawImage(pad.canvas, 0, 0, pad.canvas.width, pad.canvas.height, 0, 0, frogboard.canvas.width, frogboard.canvas.height);
+          frogBoard.drawImage(pad.canvas, 0, 0, pad.canvas.width, pad.canvas.height, 0, 0, frogBoard.canvas.width, frogBoard.canvas.height);
           frogBuffer.drawImage(frog,charx,chary,gameSettings.scale,gameSettings.scale);
-          frogboard.drawImage(frogBuffer.canvas, 0, 0, frogBuffer.canvas.width, frogBuffer.canvas.height, 0, 0, gameCanvas.canvas.width, gameCanvas.canvas.height);
+          frogBoard.drawImage(frogBuffer.canvas, 0, 0, frogBuffer.canvas.width, frogBuffer.canvas.height, 0, 0, gameCanvas.canvas.width, gameCanvas.canvas.height);
           start = null;
           totshift = 0;
           document.onkeydown = dirCheckK;
@@ -830,7 +830,7 @@
           bo = false;
           if(tutover){updateInfo();}
           frogBuffer.drawImage(check,0,0,bufferCanvas.canvas.width,bufferCanvas.canvas.height);
-          frogboard.drawImage(frogBuffer.canvas, 0, 0, frogBuffer.canvas.width, frogBuffer.canvas.height, 0, 0, gameCanvas.canvas.width, gameCanvas.canvas.height);
+          frogBoard.drawImage(frogBuffer.canvas, 0, 0, frogBuffer.canvas.width, frogBuffer.canvas.height, 0, 0, gameCanvas.canvas.width, gameCanvas.canvas.height);
           ding.play();
           bo = false;
           delay(500,win);
@@ -853,7 +853,7 @@
         dead = true;
         //wipers.style.opacity = 1;
         frogBuffer.clearRect(0,0,frogBuffer.canvas.width,frogBuffer.canvas.height);
-        frogboard.clearRect(0,0,frogboard.canvas.width,frogboard.canvas.height);
+        frogBoard.clearRect(0,0,frogBoard.canvas.width,frogBoard.canvas.height);
         splash.play();
         cross.src = sprites[13].src;
         bufferCanvas.drawImage(cross, charx,chary, gameSettings.scale, gameSettings.scale);
