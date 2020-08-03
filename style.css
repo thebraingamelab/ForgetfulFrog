@@ -500,19 +500,29 @@ button {
 /* Styling for the game canvas */
 /*******************************/
 #game-canvas {
+    z-index: -3;
     background-color: #60c8cc;
     position: absolute;
     top: 0;
     left: 0;
 }
 
-#frogboard {
-    z-index: 2;
+#pad-canvas {
+    z-index: -2;
     position: absolute;
     top: 0;
     left: 0;
 }
 
+#frog-canvas {
+    z-index: -1;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+/* Z-indexing for the UI */
+/*************************/
 
 
 /*/////////////////////////////////*/
