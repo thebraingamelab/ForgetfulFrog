@@ -887,6 +887,7 @@
         //wipeTimeouts();
         //trial_data.map[trial_data.startpos] = -1;
         trial_data.success = false;
+        pad.clearRect(0,0,pad.canvas.width,pad.canvas.height);
         //Currently, only checking lives here means trials_to_run refers to the successes needed to end
         if(gameSettings.lives > 0){
           data_collection.push(trial_data);
