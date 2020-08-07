@@ -775,11 +775,6 @@
           break;
       }
     }
-
-    function drawGameWrap(){
-      drawMap();
-      charrender();
-    }
   
 
     /////////////////////////////////////
@@ -826,8 +821,9 @@
       //save the solution in the trial_data
       trial_data.solution = data[1];
 
-      //drawMap();
-      //charrender();
+
+      drawMap();
+      charrender();
       initSounds();
 
       //blackout flag must be set before begin
@@ -836,9 +832,7 @@
       //document.ontouchstart = dirCheckM;
       dPadActive(true);
       time = performance.now();
-      delay(75,drawGameWrap);
-      delay(gameSettings.blackout_speed+75,blackoutrec);
-
+      delay(gameSettings.blackout_speed,blackoutrec);
     }
 
     function newLevel(){
@@ -926,8 +920,9 @@
     // Mainline logic
     /////////////////////////////////////
 
-    // Begin the arbitrary thing example loop
-    beginGame();
+    //currently there is a quirk, likely with the resizer
+    //that demands a 50-75 ms delay before starting to ensure proper drawing
+    delay(75,beginGame);
 
 
 // Close and execute the IIFE here
