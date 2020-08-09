@@ -794,7 +794,7 @@
     }
 
     // Game Starter
-    function beginGame(){
+    function beginGame(data,trials){
 
       // Get the game field width/height.
       // Note that the logical ingame width/height will always be as they are in config.js
@@ -814,8 +814,23 @@
         gameSettings.scale = Math.floor(GAME_HEIGHT/gameSettings.row_length);
       }
 
-      //generate a map, and output an array [map, solution]
-      let data = dfsGen(gameSettings.row_length, gameSettings.column_height, gameSettings.exit_length);
+      if(typeof data === 'undefined'){ 
+        //generate a map, and output an array [map, solution]
+        data = dfsGen(gameSettings.row_length, gameSettings.column_height, gameSettings.exit_length);
+      }
+      //ASSUMPTION: if data is input, it is of correct format: array[map,solution]
+      //leaving the assumption this way since this should be inaccessible
+      //to a common user, only researcher has access to input data
+      //a similar assumption is made below, that trials is an integer and >= 0
+
+      if(typeof trials === 'undefined'){
+        //default trial run length
+        trials_to_run = 5;
+      }
+      else{
+        trials_to_run = trials;
+      }
+
       //save the map in the trial_data while also storing it as the map to be used for this iteration of the game
       trial_data.map, gameSettings.map = data[0];
       //save the solution in the trial_data
