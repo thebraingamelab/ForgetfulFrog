@@ -58,6 +58,32 @@
         lives: 3
     }
 
+    //getters and setters for gameSettings
+    function getMap(){
+      return gameSettings.map;
+    }
+    function setMap(map){
+      return gameSettings.map = map;
+    }
+    function getBlackout_Speed(){
+      return gameSettings.blackout_speed;
+    }
+    function setBlackout_Speed(val){
+      return gameSettings.map = val;
+    }
+    function getExit_Length(){
+      return gameSettings.exit_length;
+    }
+    function setExit_Length(val){
+      return gameSettings.exit_length = val;
+    }
+    function getLives(){
+      return gameSettings.lives;
+    }
+    function setLives(val){
+      return gameSettings.lives = val;
+    }
+
     //character data
     let char = {
         tx: 1,
@@ -794,7 +820,7 @@
     }
 
     // Game Starter
-    function beginGame(data,trials){
+    function beginGame(trials,exit,data){
 
       // Get the game field width/height.
       // Note that the logical ingame width/height will always be as they are in config.js
@@ -802,6 +828,9 @@
       // physical canvas style size.
       const GAME_WIDTH = resizer.getGameWidth();
       const GAME_HEIGHT = resizer.getGameHeight();
+
+      //assumes exit is a non 0 int
+      gameSettings.exit_length = exit;
 
         // 10px margin on all sides
       const margin = 10;
