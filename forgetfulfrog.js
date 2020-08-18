@@ -93,6 +93,9 @@
     //the amount of levels to complete
     let trials_to_run = 5;
 
+    //an array of map data [[map,solution],[map,solution],...]
+    let maps_to_run = [];
+
     //vars to hold the position of the frog in pixels
     let charx = char.tx*gameSettings.scale;
     let chary = (char.ty-1)*gameSettings.scale;
@@ -244,7 +247,6 @@
         return Math.floor(Math.random() * Math.floor(max));
     }
 
-    //Quaternary Doubly Deep Depth First Search Generator
     function dfsGen(x,y,dist){
         var map = [];
         //fills the map with walls
@@ -820,7 +822,8 @@
     }
 
     // Game Starter
-    function beginGame(trials,exit,data){
+    //data can be an array|data = [map, solution] or a 2d array|data = [[map,soltuion],[map,solution],...]
+    function beginGame(data,exit,trials){
 
       // Get the game field width/height.
       // Note that the logical ingame width/height will always be as they are in config.js
@@ -849,22 +852,31 @@
         gameSettings.scale = Math.floor(GAME_HEIGHT/gameSettings.row_length);
       }
 
-      if(typeof data === 'undefined'){ 
-        //generate a map, and output an array [map, solution]
-        data = dfsGen(gameSettings.row_length, gameSettings.column_height, gameSettings.exit_length);
-      }
-      //ASSUMPTION: if data is input, it is of correct format: array[map,solution]
-      //leaving the assumption this way since this should be inaccessible
-      //to a common user, only researcher has access to input data
-      //a similar assumption is made below, that trials is an integer and >= 0
-
       if(typeof trials === 'undefined'){
         //default trial run length
-        trials_to_run = 5;
+        trials_to_run = 1;
       }
       else{
         trials_to_run = trials;
       }
+      
+      //if no map data is provided, generate it
+      if(typeof data === 'undefined'){ 
+        //generate a map, and output an array [map, solution]
+        data = dfsGen(gameSettings.row_length, gameSettings.column_height, gameSettings.exit_length);
+      }
+      //if data is a 2d array, it is a list of maps to run through
+      //store the list then run the first one
+      else if(Array.isArray(data[0])){
+        trials_to_run = data.length;
+        maps_to_run = data;
+        data = maps_to_run.pop();
+      }
+      //ASSUMPTION: if data is input, it is of correct format: array[map,solution]
+      //leaving the assumption this way since this should be inaccessible
+      //to a common user, only researcher has access to input data
+
+     
 
       //save the map in the trial_data while also storing it as the map to be used for this iteration of the game
       trial_data.map, gameSettings.map = data[0];
@@ -893,6 +905,14 @@
       beginGame();
     }
 
+    function nextLevel(){
+      gameCanvas.clearRect(0,0,gameCanvas.canvas.width,gameCanvas.canvas.height);
+      bufferCanvas.clearRect(0,0,bufferCanvas.canvas.width,bufferCanvas.canvas.height);
+      frogBoard.clearRect(0,0,frogBoard.canvas.width,frogBoard.canvas.height);
+      frogBuffer.clearRect(0,0,frogBuffer.canvas.width,frogBuffer.canvas.height);
+      beginGame(maps_to_run.pop);
+    }
+
     //void return function that manages data on player success and then ends the map
     function win(){
         //wipeTimeouts();
@@ -902,7 +922,12 @@
         trials_to_run = trials_to_run - 1;
         if(trials_to_run > 0){
           data_collection.push(trial_data);
-          delay(500, newLevel);
+          if(maps_to_run.length > 0){
+            delay(500, nextLevel);
+          }
+          else{
+            delay(500, newLevel);
+          }
         }
         else{
           return data_collection;
@@ -935,7 +960,12 @@
         //Currently, only checking lives here means trials_to_run refers to the successes needed to end
         if(gameSettings.lives > 0){
           data_collection.push(trial_data);
-          delay(500, newLevel);
+          if(maps_to_run.length > 0){
+            delay(500, nextLevel);
+          }
+          else{
+            delay(500, newLevel);
+          }
         }
         else{
           return data_collection;
