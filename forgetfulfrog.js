@@ -830,7 +830,13 @@
       const GAME_HEIGHT = resizer.getGameHeight();
 
       //assumes exit is a non 0 int
-      gameSettings.exit_length = exit;
+      if(typeof exit === 'undefined'){ 
+        //generate a map, and output an array [map, solution]
+        gameSettings.exit_length = 5;
+      }
+      else{
+        gameSettings.exit_length = exit;
+      }
 
         // 10px margin on all sides
       const margin = 10;
