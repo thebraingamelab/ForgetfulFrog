@@ -3,7 +3,7 @@
 
 // The leading semicolon is also a defensive measure when concatenating several
 // JavaScript files into one.
-;(function () {
+;var gameAccessor = (function () {
 
     // This line enables 'strict mode'. It helps you to write cleaner code,
     // like preventing you from using undeclared variables.
@@ -994,7 +994,15 @@
       delay(500,lose);
     }
 
+    /////////////////////////////////////
+    // Game Object
+    /////////////////////////////////////
+    
+    //creates an object with attached methods for server-side access outside IIFE
+    function gameAccess(){};
+    gameAccess.prototype.beginGame = beginGame;
 
+    return new gameAccess;
 
     /////////////////////////////////////
     // Mainline logic
